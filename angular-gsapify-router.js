@@ -211,7 +211,7 @@
         ];
     })
 
-    .animation('.gsapifyRouter', ['gsapifyRouter',
+    .animation('.gsapify-router', ['gsapifyRouter',
         function(gsapifyRouter) {
             return {
                 enter: function(element, done) {

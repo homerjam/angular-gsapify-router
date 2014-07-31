@@ -51,6 +51,7 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 	    }
 	});
 
+	// Configure states
     $stateProvider.state('home', {
         url: '/',
         views: {
@@ -84,4 +85,9 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 
 });
 
+```
+
+```html
+<!-- add 'gsapify-router' class to ui-view element -->
+<div ui-view="main" class="gsapify-router" autoscroll="false"></div>
 ```
