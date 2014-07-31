@@ -135,7 +135,9 @@
                     from.css = transition.cssOrigin;
                     to.css = transition.cssEnd;
 
-                    to.delay = transition.delay || 0;
+                    if (currentOptions.priority >= previousOptions.priority) {
+                        to.delay = transition.delay || 0;
+                    }
 
                     duration = duration !== undefined ? duration : transition.duration;
 
@@ -182,7 +184,9 @@
                     from.css = transition.cssEnd;
                     to.css = transition.cssOrigin;
 
-                    to.delay = transition.delay || 0;
+                    if (previousOptions.priority >= currentOptions.priority) {
+                        to.delay = transition.delay || 0;
+                    }
 
                     duration = duration !== undefined ? duration : transition.duration;
 
