@@ -176,7 +176,7 @@
                         }
                     }
 
-                    var transition = previousOptions.priority >= currentOptions.priority ?
+                    var transition = previousOptions.priority > currentOptions.priority ?
                         self.transitions[previousOptions.transition].active : self.transitions[currentOptions.transition].inactive;
 
                     var from = {}, to = {};
@@ -184,7 +184,7 @@
                     from.css = transition.cssEnd;
                     to.css = transition.cssOrigin;
 
-                    if (previousOptions.priority >= currentOptions.priority) {
+                    if (previousOptions.priority > currentOptions.priority) {
                         to.delay = transition.delay || 0;
                     }
 
