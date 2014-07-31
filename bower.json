@@ -1,0 +1,15 @@
+{
+  "name": "angular-gsapify-router",
+  "version": "0.0.1",
+  "description": "Angular UI-Router animation directive allowing configuration of GSAP state transitions based on priority",
+  "main": "angular-gsapify-router.js",
+  "ignore": [
+  	"*",
+  	"!angular-gsapify-router.js",
+  	"!README.md"
+  ],
+  "dependencies": {
+    "angular": "~1.2.16",
+    "gsap": "~1.13.1"
+  }
+}
