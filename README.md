@@ -14,7 +14,7 @@ Angular UI-Router animation directive allowing configuration of [GSAP](http://ww
 angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 
 // Configure app
-.config(function($stateProvider, gsapInOutProvider) {
+.config(function($stateProvider, gsapifyRouterProvider) {
 
 	// Set default transition to use if unspecified on state
 	gsapifyRouterProvider.default = {
@@ -23,7 +23,7 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 	};
 
 	// Add a new transition
-	gsapifyRouter.transition('slideFromRight', {
+	gsapifyRouterProvider.transition('slideFromRight', {
 	    // 'active' refers to incoming state/view if priority of incoming
 	    // state is equal or higher than outgoing state, otherwise it refers
 	    // to outgoing state/view
