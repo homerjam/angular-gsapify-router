@@ -38,7 +38,10 @@
             css: {}
         };
 
-        self.default = 'none';
+        self.defaults = {
+            enter: 'none',
+            leave: 'none'
+        };
 
         self.transition = function(transitionName, transitionOptions) {
             self.transitions[transitionName] = transitionOptions;
@@ -64,7 +67,7 @@
                         }
 
                         var currentIn = {
-                            transition: self.default,
+                            transition: self.defaults.enter,
                             priority: 0
                         };
 
@@ -73,7 +76,7 @@
                         }
 
                         var previousIn = {
-                            transition: self.default,
+                            transition: self.defaults.enter,
                             priority: 0
                         };
 
@@ -137,7 +140,7 @@
                         }
 
                         var previousOut = {
-                            transition: self.default,
+                            transition: self.defaults.leave,
                             priority: 0
                         };
 
@@ -146,7 +149,7 @@
                         }
 
                         var currentOut = {
-                            transition: self.default,
+                            transition: self.defaults.leave,
                             priority: 0
                         };
 
@@ -178,8 +181,6 @@
                             transitionDeferred.resolve();
                         };
 
-                        vars.delay = 0; // never delay outgoing view transition
-
                         var transitionDeferred = $q.defer();
 
                         TweenMax.to(element, duration, vars);
@@ -198,7 +199,7 @@
                     enter: enter,
                     leave: leave,
                     transitions: self.transitions,
-                    default: self.default
+                    defaults: self.defaults
                 };
             }
         ];
