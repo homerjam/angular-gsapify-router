@@ -1,7 +1,7 @@
 /*
 
     Name: angular-gsapify-router
-    Description: Angular UI-Router animation directive allowing configuration of [GSAP](http://www.greensock.com/gsap-js/) state transitions based on priority
+    Description: Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)
     Author: jameshomer85@gmail.com
     Licence: MIT
     Usage: http://github.com/homerjam/angular-gsapify-router
@@ -19,87 +19,26 @@
 
         self.transitions = {};
 
-        self.transitions.slideFromAbove = {
-            active: {
-                duration: 1,
-                cssOrigin: {
-                    y: '-100%'
-                },
-                cssEnd: {
-                    y: '0%'
-                }
-            },
-            inactive: {
-                duration: 1,
-                cssOrigin: {
-                    y: '100%'
-                },
-                cssEnd: {
-                    y: '0%'
-                }
+        self.transitions.slideAbove = {
+            duration: 0.5,
+            css: {
+                y: '-100%'
             }
         };
 
         self.transitions.crossfade = {
-            active: {
-                duration: 0.5,
-                cssOrigin: {
-                    opacity: 0
-                },
-                cssEnd: {
-                    opacity: 1
-                }
-            },
-            inactive: {
-                duration: 0.5,
-                cssOrigin: {
-                    opacity: 0
-                },
-                cssEnd: {
-                    opacity: 1
-                }
-            }
-        };
-
-        self.transitions.fade = {
-            active: {
-                duration: 0.5,
-                delay: 0.5,
-                cssOrigin: {
-                    opacity: 0
-                },
-                cssEnd: {
-                    opacity: 1
-                }
-            },
-            inactive: {
-                duration: 0.5,
-                cssOrigin: {
-                    opacity: 0
-                },
-                cssEnd: {
-                    opacity: 1
-                }
+            duration: 0.5,
+            css: {
+                opacity: 0
             }
         };
 
         self.transitions.none = {
-            active: {
-                duration: 0,
-                cssOrigin: {},
-                cssEnd: {}
-            },
-            inactive: {
-                duration: 0,
-                cssOrigin: {},
-                cssEnd: {}
-            }
+            duration: 0,
+            css: {}
         };
 
-        self.default = {
-            transition: 'none',
-            priority: 0
-        };
+        self.default = 'none';
 
         self.transition = function(transitionName, transitionOptions) {
             self.transitions[transitionName] = transitionOptions;
@@ -110,48 +49,72 @@
                 var enter = function(element, duration) {
                     var deferred = $q.defer();
 
-                    var currentOptions = self.default,
-                        previousOptions = self.default,
+                    var elementViewName = element.attr('ui-view'),
                         current = $state.current,
-                        previous = $state.previous;
+                        previous = $state.previous,
+                        promises = [];
 
-                    if (current.data) {
-                        if (current.data.gsapifyRouter) {
-                            currentOptions = current.data.gsapifyRouter;
+                    angular.forEach(current.views, function(currentView, currentViewName) {
+                        if (currentViewName.indexOf('@') !== -1) {
+                            currentViewName = currentViewName.substr(0, currentViewName.indexOf('@'));
                         }
-                    }
 
-                    if (previous.data) {
-                        if (previous.data.gsapifyRouter) {
-                            previousOptions = previous.data.gsapifyRouter;
+                        if (elementViewName !== currentViewName) {
+                            return false;
                         }
-                    }
 
-                    var transition = currentOptions.priority >= previousOptions.priority ?
-                        self.transitions[currentOptions.transition].active : self.transitions[previousOptions.transition].inactive;
+                        var currentIn = {
+                            transition: self.default,
+                            priority: 0
+                        };
 
-                    var from = {}, to = {};
+                        if (currentView.enter && (currentView.enter.in || currentView.enter.incoming)) {
+                            currentIn = currentView.enter.in || currentView.enter.incoming;
+                        }
 
-                    from.css = transition.cssOrigin;
-                    to.css = transition.cssEnd;
+                        var previousIn = {
+                            transition: self.default,
+                            priority: 0
+                        };
 
-                    if (currentOptions.priority >= previousOptions.priority) {
-                        to.delay = transition.delay || 0;
-                    }
+                        angular.forEach(previous.views, function(previousView, previousViewName) {
+                            if (previousViewName.indexOf('@') !== -1) {
+                                previousViewName = previousViewName.substr(0, previousViewName.indexOf('@'));
+                            }
 
-                    duration = duration !== undefined ? duration : transition.duration;
+                            if (previousViewName === currentViewName) {
+                                if (previousView.leave && (previousView.leave.in || previousView.leave.incoming)) {
+                                    previousIn = previousView.leave.in || previousView.leave.incoming;
+                                }
+                            }
+                        });
 
-                    if (angular.equals(from.css, to.css) || Object.keys(to).length === 0) {
-                        $timeout(deferred.resolve, duration * 1000);
+                        var from;
 
-                        return deferred.promise;
-                    }
+                        if (previousIn.priority > currentIn.priority) {
+                            from = self.transitions[previousIn.transition];
 
-                    to.onComplete = function() {
+                        } else {
+                            from = self.transitions[currentIn.transition];
+                        }
+
+                        var duration = from.duration,
+                            vars = angular.copy(from);
+
+                        vars.onComplete = function() {
+                            transitionDeferred.resolve();
+                        };
+
+                        var transitionDeferred = $q.defer();
+
+                        TweenMax.from(element, duration, vars);
+
+                        promises.push(transitionDeferred.promise);
+                    });
+
+                    $q.all(promises).then(function() {
                         deferred.resolve();
-                    };
-
-                    TweenMax.fromTo(element, duration, from, to);
+                    });
 
                     return deferred.promise;
                 };
@@ -159,48 +122,74 @@
                 var leave = function(element, duration) {
                     var deferred = $q.defer();
 
-                    var currentOptions = self.default,
-                        previousOptions = self.default,
+                    var elementViewName = element.attr('ui-view'),
                         current = $state.current,
-                        previous = $state.previous;
+                        previous = $state.previous,
+                        promises = [];
 
-                    if (current.data) {
-                        if (current.data.gsapifyRouter) {
-                            currentOptions = current.data.gsapifyRouter;
+                    angular.forEach(previous.views, function(previousView, previousViewName) {
+                        if (previousViewName.indexOf('@') !== -1) {
+                            previousViewName = previousViewName.substr(0, previousViewName.indexOf('@'));
                         }
-                    }
 
-                    if (previous.data) {
-                        if (previous.data.gsapifyRouter) {
-                            previousOptions = previous.data.gsapifyRouter;
+                        if (elementViewName !== previousViewName) {
+                            return false;
                         }
-                    }
 
-                    var transition = previousOptions.priority > currentOptions.priority ?
-                        self.transitions[previousOptions.transition].active : self.transitions[currentOptions.transition].inactive;
+                        var previousOut = {
+                            transition: self.default,
+                            priority: 0
+                        };
 
-                    var from = {}, to = {};
+                        if (previousView.leave && (previousView.leave.out || previousView.leave.outgoing)) {
+                            previousOut = previousView.leave.out || previousView.leave.outgoing;
+                        }
 
-                    from.css = transition.cssEnd;
-                    to.css = transition.cssOrigin;
+                        var currentOut = {
+                            transition: self.default,
+                            priority: 0
+                        };
 
-                    if (previousOptions.priority > currentOptions.priority) {
-                        to.delay = transition.delay || 0;
-                    }
+                        angular.forEach(current.views, function(currentView, currentViewName) {
+                            if (currentViewName.indexOf('@') !== -1) {
+                                currentViewName = currentViewName.substr(0, currentViewName.indexOf('@'));
+                            }
 
-                    duration = duration !== undefined ? duration : transition.duration;
+                            if (currentViewName === previousViewName) {
+                                if (currentView.enter && (currentView.enter.out || currentView.enter.outgoing)) {
+                                    currentOut = currentView.enter.out || currentView.enter.outgoing;
+                                }
+                            }
+                        });
 
-                    if (angular.equals(from.css, to.css) || Object.keys(to).length === 0) {
-                        $timeout(deferred.resolve, duration * 1000);
+                        var to;
 
-                        return deferred.promise;
-                    }
+                        if (currentOut.priority > previousOut.priority) {
+                            to = self.transitions[currentOut.transition];
 
-                    to.onComplete = function() {
+                        } else {
+                            to = self.transitions[previousOut.transition];
+                        }
+
+                        var duration = to.duration,
+                            vars = angular.copy(to);
+
+                        vars.onComplete = function() {
+                            transitionDeferred.resolve();
+                        };
+
+                        vars.delay = 0; // never delay outgoing view transition
+
+                        var transitionDeferred = $q.defer();
+
+                        TweenMax.to(element, duration, vars);
+
+                        promises.push(transitionDeferred.promise);
+                    });
+
+                    $q.all(promises).then(function() {
                         deferred.resolve();
-                    };
-
-                    TweenMax.fromTo(element, duration, from, to);
+                    });
 
                     return deferred.promise;
                 };
@@ -219,7 +208,7 @@
         function(gsapifyRouter) {
             return {
                 enter: function(element, done) {
-                    gsapifyRouter.enter(element).then(function(){
+                    gsapifyRouter.enter(element).then(function() {
                         done();
                     });
 
@@ -230,7 +219,7 @@
                     };
                 },
                 leave: function(element, done) {
-                    gsapifyRouter.leave(element).then(function(){
+                    gsapifyRouter.leave(element).then(function() {
                         done();
                     });
                 }

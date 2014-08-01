@@ -1,6 +1,6 @@
 # angular-gsapify-router
 
-Angular UI-Router animation directive allowing configuration of [GSAP](http://www.greensock.com/gsap-js/) state transitions based on priority
+Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)
 
 ## Installation
 
@@ -10,45 +10,22 @@ Angular UI-Router animation directive allowing configuration of [GSAP](http://ww
 
 ```javascript
 
-// Setup app, specify dependencies
+// Setup dependencies
 angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 
 // Configure app
 .config(function($stateProvider, gsapifyRouterProvider) {
 
-	// Set default transition to use if unspecified on state
-	gsapifyRouterProvider.default = {
-	    transition: 'none', // name of transition to use or 'none'
-	    priority: 0 // higher priority determines winning transition
-	};
+	// Set default transition to use if unspecified on view
+	gsapifyRouterProvider.default = 'none'; // name of transition to use or 'none'
 
 	// Add a new transition
-	gsapifyRouterProvider.transition('slideFromRight', {
-	    // 'active' refers to incoming state/view if priority of incoming
-	    // state is equal or higher than outgoing state, otherwise it refers
-	    // to outgoing state/view
-	    active: {
-	        duration: 0.5, // transition duration
-	        delay: 0.5, // transition delay
-	        cssOrigin: { // start point for transition (eg. off screen)
-	            x: '100%'
-	        },
-	        cssEnd: {
-	            x: '0%' // end point for transition (eg. normal position)
-	        }
-	    },
-	    // 'inactive' refers to outgoing state/view if priority of incoming
-	    // state is equal or higher than outgoing state, otherwise it refers
-	    // to incoming state/view
-	    inactive: {
-	        duration: 0.5,
-	        cssOrigin: {
-	            x: '100%'
-	        },
-	        cssEnd: {
-	            x: '0%'
-	        }
-	    }
+	gsapifyRouterProvider.transition('slideToFromRight', {
+        duration: 0.5, // transition duration
+        delay: 0.5, // transition delay
+        css: { // start/end point for transition (eg. off screen)
+            x: '100%'
+        }
 	});
 
 	// Configure states
@@ -56,29 +33,28 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
         url: '/',
         views: {
             main: {
+            	enter: { // when entering this state
+            		incoming: { // use this transition on the incoming view
+            			transition: 'slideToFromRight', // name of transition to use or 'none'
+            			priority: 1 // priority determines whether to use transition of entering or leaving state
+            		},
+            		outgoing: { // use this transition on the outgoing state
+            			transition: 'slideToFromLeft',
+            			priority: 1
+            		}
+            	},
+            	leave: { // when leaving this state
+            		incoming: { // use this transition on the incoming view
+            			transition: 'slideToFromLeft',
+            			priority: 1
+            		},
+            		outgoing: { // use this transition on the outgoing state
+            			transition: 'slideToFromRight',
+            			priority: 1
+            		}
+            	},
                 templateUrl: '/templates/home.html',
                 controller: 'HomeCtrl as home'
-        },
-        data: {
-        	// set options in 'data' property of state
-            gsapifyRouter: {
-                priority: 0,
-                transition: 'fade'
-            }
-        }
-    });
-
-    $stateProvider.state('portfolio', {
-        url: '/portfolio',
-        views: {
-            main: {
-                templateUrl: '/templates/portfolio.html',
-                controller: 'PortfolioCtrl as portfolio'
-        },
-        data: {
-            gsapifyRouter: {
-                priority: 1,
-                transition: 'slideFromRight'
             }
         }
     });
