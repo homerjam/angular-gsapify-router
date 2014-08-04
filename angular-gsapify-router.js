@@ -47,8 +47,8 @@
             self.transitions[transitionName] = transitionOptions;
         };
 
-        self.$get = ['$rootScope', '$state', '$document', '$timeout', '$q', 'TweenMax',
-            function($rootScope, $state, $document, $timeout, $q, TweenMax) {
+        self.$get = ['$rootScope', '$state', '$document', '$timeout', '$q', '$log', 'TweenMax',
+            function($rootScope, $state, $document, $timeout, $q, $log, TweenMax) {
                 var enter = function(element, duration) {
                     var deferred = $q.defer();
 
@@ -97,8 +97,16 @@
                         if (previousIn.priority > currentIn.priority) {
                             from = self.transitions[previousIn.transition];
 
+                            if (!from) {
+                                $log.error("gsapifyRouter: Invalid transition '" + previousIn.transition + "'");
+                            }
+
                         } else {
                             from = self.transitions[currentIn.transition];
+
+                            if (!from) {
+                                $log.error("gsapifyRouter: Invalid transition '" + currentIn.transition + "'");
+                            }
                         }
 
                         var duration = from.duration,
@@ -170,8 +178,16 @@
                         if (currentOut.priority > previousOut.priority) {
                             to = self.transitions[currentOut.transition];
 
+                            if (!to) {
+                                $log.error("gsapifyRouter: Invalid transition '" + currentOut.transition + "'");
+                            }
+
                         } else {
                             to = self.transitions[previousOut.transition];
+
+                            if (!to) {
+                                $log.error("gsapifyRouter: Invalid transition '" + previousOut.transition + "'");
+                            }
                         }
 
                         var duration = to.duration,
