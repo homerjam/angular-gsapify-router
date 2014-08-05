@@ -33,30 +33,36 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
         url: '/',
         views: {
             main: {
-            	enter: { // when entering this state
-            		incoming: { // use this transition on the incoming view
-            			transition: 'slideToFromRight', // name of transition to use or 'none'
-            			priority: 1 // priority determines whether to use transition of entering or leaving state
-            		},
-            		outgoing: { // use this transition on the outgoing state
-            			transition: 'slideToFromLeft',
-            			priority: 1
-            		}
-            	},
-            	leave: { // when leaving this state
-            		incoming: { // use this transition on the incoming view
-            			transition: 'slideToFromLeft',
-            			priority: 1
-            		},
-            		outgoing: { // use this transition on the outgoing state
-            			transition: 'slideToFromRight',
-            			priority: 1
-            		}
-            	},
                 templateUrl: '/templates/home.html',
                 controller: 'HomeCtrl as home'
             }
-        }
+        },
+        data: {
+            // define transitions in data object of state using `gsapifyRouter.VIEWNAME`
+            // to allow inheritance/overwriting of transition preferences
+            gsapifyRouter.main: {
+                enter: { // when entering this state
+                    incoming: { // use this transition on the incoming view
+                        transition: 'slideToFromRight', // name of transition to use or 'none'
+                        priority: 1 // priority determines whether to use transition of entering or leaving state
+                    },
+                    outgoing: { // use this transition on the outgoing state
+                        transition: 'slideToFromLeft',
+                        priority: 1
+                    }
+                },
+                leave: { // when leaving this state
+                    incoming: { // use this transition on the incoming view
+                        transition: 'slideToFromLeft',
+                        priority: 1
+                    },
+                    outgoing: { // use this transition on the outgoing state
+                        transition: 'slideToFromRight',
+                        priority: 1
+                    }
+                },
+            }
+        }        
     });
 
 });

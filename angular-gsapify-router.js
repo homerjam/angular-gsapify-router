@@ -19,15 +19,48 @@
 
         self.transitions = {};
 
-        self.transitions.slideAbove = {
-            duration: 0.5,
+        self.transitions.above = {
+            duration: 1,
+            ease: 'Quart.easeInOut',
             css: {
                 y: '-100%'
             }
         };
 
-        self.transitions.crossfade = {
+        self.transitions.below = {
+            duration: 1,
+            ease: 'Quart.easeInOut',
+            css: {
+                y: '100%'
+            }
+        };
+
+        self.transitions.left = {
+            duration: 1,
+            ease: 'Quint.easeInOut',
+            css: {
+                x: '-100%'
+            }
+        };
+
+        self.transitions.right = {
+            duration: 1,
+            ease: 'Quint.easeInOut',
+            css: {
+                x: '100%'
+            }
+        };
+
+        self.transitions.fade = {
             duration: 0.5,
+            css: {
+                opacity: 0
+            }
+        };
+
+        self.transitions.fadeDelayed = {
+            duration: 0.5,
+            delay: 0.5,
             css: {
                 opacity: 0
             }
@@ -49,164 +82,122 @@
 
         self.$get = ['$rootScope', '$state', '$document', '$timeout', '$q', '$log', 'TweenMax',
             function($rootScope, $state, $document, $timeout, $q, $log, TweenMax) {
-                var enter = function(element, duration) {
+                var enter = function(element) {
                     var deferred = $q.defer();
 
-                    var elementViewName = element.attr('ui-view'),
+                    var view = element.attr('ui-view'),
                         current = $state.current,
                         previous = $state.previous,
                         promises = [];
 
-                    angular.forEach(current.views, function(currentView, currentViewName) {
-                        if (currentViewName.indexOf('@') !== -1) {
-                            currentViewName = currentViewName.substr(0, currentViewName.indexOf('@'));
+                    var currentOpts = {
+                        transition: self.defaults.enter,
+                        priority: 0
+                    };
+
+                    if (current.data) {
+                        if (current.data['gsapifyRouter.' + view]) {
+                            currentOpts = current.data['gsapifyRouter.' + view].enter.in;
+                        }
+                    }
+
+                    var previousOpts = {
+                        transition: self.defaults.enter,
+                        priority: 0
+                    };
+
+                    if (previous.data) {
+                        if (previous.data['gsapifyRouter.' + view]) {
+                            previousOpts = previous.data['gsapifyRouter.' + view].leave.in;
+                        }
+                    }
+
+                    var from;
+
+                    if (previousOpts.priority > currentOpts.priority) {
+                        from = self.transitions[previousOpts.transition];
+
+                        if (!from) {
+                            $log.error("gsapifyRouter: Invalid transition '" + previousOpts.transition + "'");
                         }
 
-                        if (elementViewName !== currentViewName) {
-                            return false;
+                    } else {
+                        from = self.transitions[currentOpts.transition];
+
+                        if (!from) {
+                            $log.error("gsapifyRouter: Invalid transition '" + currentOpts.transition + "'");
                         }
+                    }
 
-                        var currentIn = {
-                            transition: self.defaults.enter,
-                            priority: 0
-                        };
+                    var duration = from.duration,
+                        vars = angular.copy(from);
 
-                        if (currentView.enter && (currentView.enter.in || currentView.enter.incoming)) {
-                            currentIn = currentView.enter.in || currentView.enter.incoming;
-                        }
+                    var transitionDeferred = $q.defer();
 
-                        var previousIn = {
-                            transition: self.defaults.enter,
-                            priority: 0
-                        };
-
-                        angular.forEach(previous.views, function(previousView, previousViewName) {
-                            if (previousViewName.indexOf('@') !== -1) {
-                                previousViewName = previousViewName.substr(0, previousViewName.indexOf('@'));
-                            }
-
-                            if (previousViewName === currentViewName) {
-                                if (previousView.leave && (previousView.leave.in || previousView.leave.incoming)) {
-                                    previousIn = previousView.leave.in || previousView.leave.incoming;
-                                }
-                            }
-                        });
-
-                        var from;
-
-                        if (previousIn.priority > currentIn.priority) {
-                            from = self.transitions[previousIn.transition];
-
-                            if (!from) {
-                                $log.error("gsapifyRouter: Invalid transition '" + previousIn.transition + "'");
-                            }
-
-                        } else {
-                            from = self.transitions[currentIn.transition];
-
-                            if (!from) {
-                                $log.error("gsapifyRouter: Invalid transition '" + currentIn.transition + "'");
-                            }
-                        }
-
-                        var duration = from.duration,
-                            vars = angular.copy(from);
-
-                        vars.onComplete = function() {
-                            transitionDeferred.resolve();
-                        };
-
-                        var transitionDeferred = $q.defer();
-
-                        TweenMax.from(element, duration, vars);
-
-                        promises.push(transitionDeferred.promise);
-                    });
-
-                    $q.all(promises).then(function() {
+                    vars.onComplete = function() {
                         deferred.resolve();
-                    });
+                    };
+
+                    TweenMax.from(element, duration, vars);
 
                     return deferred.promise;
                 };
 
-                var leave = function(element, duration) {
+                var leave = function(element) {
                     var deferred = $q.defer();
 
-                    var elementViewName = element.attr('ui-view'),
+                    var view = element.attr('ui-view'),
                         current = $state.current,
                         previous = $state.previous,
                         promises = [];
 
-                    angular.forEach(previous.views, function(previousView, previousViewName) {
-                        if (previousViewName.indexOf('@') !== -1) {
-                            previousViewName = previousViewName.substr(0, previousViewName.indexOf('@'));
+                    var previousOpts = {
+                        transition: self.defaults.leave,
+                        priority: 0
+                    };
+
+                    if (previous.data) {
+                        if (previous.data['gsapifyRouter.' + view]) {
+                            previousOpts = previous.data['gsapifyRouter.' + view].leave.out;
+                        }
+                    }
+
+                    var currentOpts = {
+                        transition: self.defaults.leave,
+                        priority: 0
+                    };
+
+                    if (current.data) {
+                        if (current.data['gsapifyRouter.' + view]) {
+                            currentOpts = current.data['gsapifyRouter.' + view].enter.out;
+                        }
+                    }
+
+                    var to;
+
+                    if (currentOpts.priority > previousOpts.priority) {
+                        to = self.transitions[currentOpts.transition];
+
+                        if (!to) {
+                            $log.error("gsapifyRouter: Invalid transition '" + currentOpts.transition + "'");
                         }
 
-                        if (elementViewName !== previousViewName) {
-                            return false;
+                    } else {
+                        to = self.transitions[previousOpts.transition];
+
+                        if (!to) {
+                            $log.error("gsapifyRouter: Invalid transition '" + previousOpts.transition + "'");
                         }
+                    }
 
-                        var previousOut = {
-                            transition: self.defaults.leave,
-                            priority: 0
-                        };
+                    var duration = to.duration,
+                        vars = angular.copy(to);
 
-                        if (previousView.leave && (previousView.leave.out || previousView.leave.outgoing)) {
-                            previousOut = previousView.leave.out || previousView.leave.outgoing;
-                        }
-
-                        var currentOut = {
-                            transition: self.defaults.leave,
-                            priority: 0
-                        };
-
-                        angular.forEach(current.views, function(currentView, currentViewName) {
-                            if (currentViewName.indexOf('@') !== -1) {
-                                currentViewName = currentViewName.substr(0, currentViewName.indexOf('@'));
-                            }
-
-                            if (currentViewName === previousViewName) {
-                                if (currentView.enter && (currentView.enter.out || currentView.enter.outgoing)) {
-                                    currentOut = currentView.enter.out || currentView.enter.outgoing;
-                                }
-                            }
-                        });
-
-                        var to;
-
-                        if (currentOut.priority > previousOut.priority) {
-                            to = self.transitions[currentOut.transition];
-
-                            if (!to) {
-                                $log.error("gsapifyRouter: Invalid transition '" + currentOut.transition + "'");
-                            }
-
-                        } else {
-                            to = self.transitions[previousOut.transition];
-
-                            if (!to) {
-                                $log.error("gsapifyRouter: Invalid transition '" + previousOut.transition + "'");
-                            }
-                        }
-
-                        var duration = to.duration,
-                            vars = angular.copy(to);
-
-                        vars.onComplete = function() {
-                            transitionDeferred.resolve();
-                        };
-
-                        var transitionDeferred = $q.defer();
-
-                        TweenMax.to(element, duration, vars);
-
-                        promises.push(transitionDeferred.promise);
-                    });
-
-                    $q.all(promises).then(function() {
+                    vars.onComplete = function() {
                         deferred.resolve();
-                    });
+                    };
+
+                    TweenMax.to(element, duration, vars);
 
                     return deferred.promise;
                 };
