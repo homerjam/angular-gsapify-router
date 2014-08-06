@@ -10,7 +10,7 @@
 (function() {
     'use strict';
 
-    angular.module('hj.gsapifyRouter', ['ngAnimate'])
+    angular.module('hj.gsapifyRouter', ['ui.router', 'ngAnimate'])
 
     .constant('TweenMax', TweenMax)
 
@@ -82,6 +82,11 @@
 
         self.$get = ['$rootScope', '$state', '$document', '$timeout', '$q', '$log', 'TweenMax',
             function($rootScope, $state, $document, $timeout, $q, $log, TweenMax) {
+                $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
+                    $state.previous = fromState;
+                    $state.previousParams = fromParams;
+                });
+
                 var enter = function(element) {
                     var deferred = $q.defer();
 
@@ -133,6 +138,10 @@
                         vars = angular.copy(from);
 
                     var transitionDeferred = $q.defer();
+
+                    vars.onStart = function() {
+                        element.css('visibility', 'visible');
+                    };
 
                     vars.onComplete = function() {
                         deferred.resolve();
@@ -216,6 +225,8 @@
         function(gsapifyRouter) {
             return {
                 enter: function(element, done) {
+                    element.css('visibility', 'hidden');
+
                     gsapifyRouter.enter(element).then(function() {
                         done();
                     });
