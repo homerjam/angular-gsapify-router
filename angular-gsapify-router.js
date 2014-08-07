@@ -112,6 +112,9 @@
                 var enter = function(element) {
                     var deferred = $q.defer();
 
+                    element.css('visibility', 'hidden');
+                    element[0].classList.add('gsapify-router-in');
+
                     var view = element.attr('ui-view'),
 
                         current = $state.current,
@@ -121,6 +124,8 @@
                         previousOpts = getOpts(previous, view, 'leave', 'in'),
 
                         from;
+
+                    element[0].setAttribute('data-state', current.name);
 
                     if (previousOpts.priority > currentOpts.priority) {
                         from = self.transitions[previousOpts.transition];
@@ -159,6 +164,9 @@
 
                 var leave = function(element) {
                     var deferred = $q.defer();
+
+                    element[0].classList.remove('gsapify-router-in');
+                    element[0].classList.add('gsapify-router-out');
 
                     var view = element.attr('ui-view'),
 
@@ -211,8 +219,6 @@
         function(gsapifyRouter) {
             return {
                 enter: function(element, done) {
-                    element.css('visibility', 'hidden');
-
                     gsapifyRouter.enter(element).then(function() {
                         done();
                     });
