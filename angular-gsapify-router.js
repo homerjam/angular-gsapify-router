@@ -87,37 +87,40 @@
                     $state.previousParams = fromParams;
                 });
 
+                var getOpts = function(state, view, enterLeave, inOut) {
+                    var opts = {
+                        transition: self.defaults[inOut === 'in' ? 'enter' : 'leave'],
+                        priority: 0
+                    };
+
+                    if (state.data) {
+                        if (state.data['gsapifyRouter.' + view] && state.data['gsapifyRouter.' + view][enterLeave]) {
+                            switch (typeof state.data['gsapifyRouter.' + view][enterLeave][inOut]) {
+                                case 'object':
+                                    opts = angular.extend(opts, state.data['gsapifyRouter.' + view][enterLeave][inOut]);
+                                    break;
+                                case 'string':
+                                    opts.transition = state.data['gsapifyRouter.' + view][enterLeave][inOut];
+                                    break;
+                            }
+                        }
+                    }
+
+                    return opts;
+                };
+
                 var enter = function(element) {
                     var deferred = $q.defer();
 
                     var view = element.attr('ui-view'),
+
                         current = $state.current,
                         previous = $state.previous,
-                        promises = [];
 
-                    var currentOpts = {
-                        transition: self.defaults.enter,
-                        priority: 0
-                    };
+                        currentOpts = getOpts(current, view, 'enter', 'in'),
+                        previousOpts = getOpts(previous, view, 'leave', 'in'),
 
-                    if (current.data) {
-                        if (current.data['gsapifyRouter.' + view]) {
-                            currentOpts = current.data['gsapifyRouter.' + view].enter.in;
-                        }
-                    }
-
-                    var previousOpts = {
-                        transition: self.defaults.enter,
-                        priority: 0
-                    };
-
-                    if (previous.data) {
-                        if (previous.data['gsapifyRouter.' + view]) {
-                            previousOpts = previous.data['gsapifyRouter.' + view].leave.in;
-                        }
-                    }
-
-                    var from;
+                        from;
 
                     if (previousOpts.priority > currentOpts.priority) {
                         from = self.transitions[previousOpts.transition];
@@ -137,8 +140,6 @@
                     var duration = from.duration,
                         vars = angular.copy(from);
 
-                    var transitionDeferred = $q.defer();
-
                     vars.onStart = function() {
                         element.css('visibility', 'visible');
                     };
@@ -156,33 +157,14 @@
                     var deferred = $q.defer();
 
                     var view = element.attr('ui-view'),
+
                         current = $state.current,
                         previous = $state.previous,
-                        promises = [];
 
-                    var previousOpts = {
-                        transition: self.defaults.leave,
-                        priority: 0
-                    };
+                        previousOpts = getOpts(previous, view, 'leave', 'out'),
+                        currentOpts = getOpts(current, view, 'enter', 'out'),
 
-                    if (previous.data) {
-                        if (previous.data['gsapifyRouter.' + view]) {
-                            previousOpts = previous.data['gsapifyRouter.' + view].leave.out;
-                        }
-                    }
-
-                    var currentOpts = {
-                        transition: self.defaults.leave,
-                        priority: 0
-                    };
-
-                    if (current.data) {
-                        if (current.data['gsapifyRouter.' + view]) {
-                            currentOpts = current.data['gsapifyRouter.' + view].enter.out;
-                        }
-                    }
-
-                    var to;
+                        to;
 
                     if (currentOpts.priority > previousOpts.priority) {
                         to = self.transitions[currentOpts.transition];
