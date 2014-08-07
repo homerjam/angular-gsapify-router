@@ -148,6 +148,10 @@
                         deferred.resolve();
                     };
 
+                    if (!vars.css || Object.keys(vars.css).length === 0) {
+                        vars.onStart();
+                    }
+
                     TweenMax.from(element, duration, vars);
 
                     return deferred.promise;
