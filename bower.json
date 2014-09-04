@@ -1,15 +1,21 @@
 {
   "name": "angular-gsapify-router",
-  "version": "0.0.11",
+  "version": "0.0.12",
   "description": "Angular UI-Router animation directive allowing configuration of state transitions using GSAP",
   "main": "angular-gsapify-router.js",
   "ignore": [
-  	"*",
-  	"!angular-gsapify-router.js",
-  	"!README.md"
+    "*",
+    "!angular-gsapify-router.js",
+    "!README.md"
   ],
   "dependencies": {
-    "angular": "~1.2.16",
-    "gsap": "~1.13.1"
+    "angular": "~1.3.0",
+    "angular-animate": "~1.3.0",
+    "gsap": "~1.13.1",
+    "angular-ui": "~0.4.0",
+    "angular-ui-router": "~0.2.11"
+  },
+  "devDependencies": {
+    "mobile-angular-ui": "~1.1.0"
   }
 }
