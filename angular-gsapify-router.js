@@ -147,10 +147,12 @@
 
                     vars.onStart = function() {
                         element.css('visibility', 'visible');
+                        $rootScope.$broadcast('gsapifyRouter:enter-start');
                     };
 
                     vars.onComplete = function() {
                         deferred.resolve();
+                        $rootScope.$broadcast('gsapifyRouter:enter-complete');
                     };
 
                     if (!vars.css || Object.keys(vars.css).length === 0) {
@@ -198,6 +200,7 @@
 
                     vars.onComplete = function() {
                         deferred.resolve();
+                        $rootScope.$broadcast('gsapifyRouter:leave-complete');
                     };
 
                     TweenMax.to(element, duration, vars);
