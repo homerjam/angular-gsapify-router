@@ -215,11 +215,15 @@
         ];
     })
 
-    .animation('.gsapify-router', ['gsapifyRouter',
-        function(gsapifyRouter) {
+    .animation('.gsapify-router', ['$rootScope', 'gsapifyRouter',
+        function($rootScope, gsapifyRouter) {
             return {
                 enter: function(element, done) {
+                    $rootScope.$broadcast('gsapifyRouter:enterStart', element);
+
                     gsapifyRouter.enter(element).then(function() {
+                        $rootScope.$broadcast('gsapifyRouter:enterSuccess', element);
+
                         done();
                     });
 
@@ -230,7 +234,11 @@
                     };
                 },
                 leave: function(element, done) {
+                    $rootScope.$broadcast('gsapifyRouter:leaveStart', element);
+
                     gsapifyRouter.leave(element).then(function() {
+                        $rootScope.$broadcast('gsapifyRouter:leaveSuccess', element);
+
                         done();
                     });
                 }
