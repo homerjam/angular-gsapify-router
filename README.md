@@ -2,6 +2,10 @@
 
 Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)
 
+## Demo
+
+[http://homerjam.github.io/angular-gsapify-router/](http://homerjam.github.io/angular-gsapify-router/)
+
 ## Installation
 
 `$ bower install angular-gsapify-router --save`
