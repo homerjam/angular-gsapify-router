@@ -113,7 +113,7 @@
                     var deferred = $q.defer();
 
                     element.css('visibility', 'hidden');
-                    element[0].classList.add('gsapify-router-in');
+                    element.addClass('gsapify-router-in-setup');
 
                     var view = element.attr('ui-view'),
 
@@ -147,9 +147,13 @@
 
                     vars.onStart = function() {
                         element.css('visibility', 'visible');
+                        element.removeClass('gsapify-router-in-setup');
+                        element.addClass('gsapify-router-in');
                     };
 
                     vars.onComplete = function() {
+                        element.addClass('gsapify-router-in-end');
+
                         deferred.resolve();
                     };
 
@@ -165,8 +169,8 @@
                 var leave = function(element) {
                     var deferred = $q.defer();
 
-                    element[0].classList.remove('gsapify-router-in');
-                    element[0].classList.add('gsapify-router-out');
+                    element.removeClass('gsapify-router-in gsapify-router-in-end');
+                    element.addClass('gsapify-router-out-setup');
 
                     var view = element.attr('ui-view'),
 
@@ -196,7 +200,14 @@
                     var duration = to.duration,
                         vars = angular.copy(to);
 
+                    vars.onStart = function() {
+                        element.removeClass('gsapify-router-out-setup');
+                        element.addClass('gsapify-router-out');
+                    };
+
                     vars.onComplete = function() {
+                        element.remove();
+
                         deferred.resolve();
                     };
 
@@ -228,9 +239,7 @@
                     });
 
                     return function(cancelled) {
-                        if (cancelled) {
-                            element.remove();
-                        }
+                        if (cancelled) {}
                     };
                 },
                 leave: function(element, done) {
