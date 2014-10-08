@@ -113,6 +113,7 @@
                     var deferred = $q.defer();
 
                     element.css('visibility', 'hidden');
+
                     element.addClass('gsapify-router-in-setup');
 
                     var view = element.attr('ui-view'),
@@ -142,11 +143,12 @@
                         }
                     }
 
-                    var duration = from.duration,
+                    var duration = $state.previous.name === '' ? 0 : from.duration, // don't trigger transition on boot
                         vars = angular.copy(from);
 
                     vars.onStart = function() {
                         element.css('visibility', 'visible');
+
                         element.removeClass('gsapify-router-in-setup');
                         element.addClass('gsapify-router-in');
                     };
@@ -157,7 +159,7 @@
                         deferred.resolve();
                     };
 
-                    if (!vars.css || Object.keys(vars.css).length === 0) {
+                    if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
                         vars.onStart();
                     }
 
