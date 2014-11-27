@@ -241,7 +241,9 @@
                     });
 
                     return function(cancelled) {
-                        if (cancelled) {}
+                        if (cancelled) {
+                            element.remove();
+                        }
                     };
                 },
                 leave: function(element, done) {
