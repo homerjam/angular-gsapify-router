@@ -228,8 +228,22 @@
         ];
     })
 
-    .animation('.gsapify-router', ['$rootScope', 'gsapifyRouter',
-        function($rootScope, gsapifyRouter) {
+    .animation('.gsapify-router', ['$rootScope', '$state', '$document', 'gsapifyRouter',
+        function($rootScope, $state, $document, gsapifyRouter) {
+            var watchInitialState = $rootScope.$watch(function() {
+                return $state.current.name;
+            }, function(name) {
+                if (name !== '') {
+                    watchInitialState();
+
+                    var elements = $document[0].querySelectorAll('.gsapify-router');
+
+                    angular.forEach(elements, function(el) {
+                        el.setAttribute('data-state', name);
+                    });
+                }
+            });
+
             return {
                 enter: function(element, done) {
                     $rootScope.$broadcast('gsapifyRouter:enterStart', element);
@@ -241,7 +255,9 @@
                     });
 
                     return function(cancelled) {
-                        if (cancelled) {}
+                        if (cancelled) {
+                            element.remove();
+                        }
                     };
                 },
                 leave: function(element, done) {
