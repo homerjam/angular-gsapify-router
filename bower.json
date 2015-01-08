@@ -9,8 +9,8 @@
     "!README.md"
   ],
   "dependencies": {
-    "angular": "~1.2.0",
-    "angular-animate": "~1.2.0",
+    "angular": ">=1.2.0",
+    "angular-animate": ">=1.2.0",
     "gsap": "~1.13.0",
     "angular-ui-router": "~0.2.11"
   },
