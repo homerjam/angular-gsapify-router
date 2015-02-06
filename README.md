@@ -55,6 +55,10 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
             main: {
                 templateUrl: '/templates/home.html',
                 controller: 'HomeCtrl as home'
+            },
+            header: {
+                templateUrl: '/templates/menu.html',
+                controller: 'MenuCtrl as menu'
             }
         },
         data: {
@@ -100,6 +104,30 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 
                 },
             }
+
+            'gsapifyRouter.header': {
+
+                enter: {
+
+                    // use a function to determine transition
+                    // note: `$state.history` is populated by `gsapifyRouter` module, not `ui-router`
+                    in: ['$state', function($state) {
+                        return {
+                            transition: $state.current.name === $state.history[$state.history.length - 2].name ? 'reverse' : 'normal',
+                            priority: 1
+                        };
+                    }],
+
+                    out: {
+                        transition: function(someService) {
+                            return someService.getTransition('header');
+                        },
+                        priority: 2
+                    }
+
+                },
+            }
+
         }        
     });
 

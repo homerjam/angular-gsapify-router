@@ -80,11 +80,18 @@
             self.transitions[transitionName] = transitionOptions;
         };
 
-        self.$get = ['$rootScope', '$state', '$document', '$timeout', '$q', '$log', 'TweenMax',
-            function($rootScope, $state, $document, $timeout, $q, $log, TweenMax) {
+        self.$get = ['$rootScope', '$state', '$document', '$injector', '$timeout', '$q', '$log', 'TweenMax',
+            function($rootScope, $state, $document, $injector, $timeout, $q, $log, TweenMax) {
+                $state.history = [];
+
                 $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
                     $state.previous = fromState;
                     $state.previousParams = fromParams;
+
+                    $state.history.push({
+                        name: fromState.name,
+                        params: fromParams
+                    });
                 });
 
                 var getOpts = function(state, view, enterLeave, inOut) {
@@ -95,13 +102,27 @@
 
                     if (state.data) {
                         if (state.data['gsapifyRouter.' + view] && state.data['gsapifyRouter.' + view][enterLeave]) {
-                            switch (typeof state.data['gsapifyRouter.' + view][enterLeave][inOut]) {
-                                case 'object':
-                                    opts = angular.extend(opts, state.data['gsapifyRouter.' + view][enterLeave][inOut]);
-                                    break;
-                                case 'string':
-                                    opts.transition = state.data['gsapifyRouter.' + view][enterLeave][inOut];
-                                    break;
+                            if (state.data['gsapifyRouter.' + view][enterLeave][inOut]) {
+                                switch (toString.call(state.data['gsapifyRouter.' + view][enterLeave][inOut])) {
+                                    case '[object Array]':                                    
+                                    case '[object Function]':
+                                        opts = $injector.invoke(state.data['gsapifyRouter.' + view][enterLeave][inOut]);
+                                        break;
+                                    case '[object Object]':
+                                        opts = angular.extend(opts, state.data['gsapifyRouter.' + view][enterLeave][inOut]);
+                                        Object.keys(opts).forEach(function(key) {
+                                            switch (toString.call(opts[key])) {
+                                                case '[object Array]':
+                                                case '[object Function]':
+                                                    opts[key] = $injector.invoke(opts[key]);
+                                                    break;
+                                            }
+                                        });
+                                        break;
+                                    case '[object String]':
+                                        opts.transition = state.data['gsapifyRouter.' + view][enterLeave][inOut];
+                                        break;
+                                }
                             }
                         }
                     }
