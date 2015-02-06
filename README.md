@@ -140,7 +140,3 @@ In your templates:
 <!-- add 'gsapify-router' class to ui-view element -->
 <div ui-view="main" class="gsapify-router" autoscroll="false"></div>
 ```
-
-## TODO
-
-* Events
