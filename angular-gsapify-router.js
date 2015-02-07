@@ -104,7 +104,7 @@
                         if (state.data['gsapifyRouter.' + view] && state.data['gsapifyRouter.' + view][enterLeave]) {
                             if (state.data['gsapifyRouter.' + view][enterLeave][inOut]) {
                                 switch (toString.call(state.data['gsapifyRouter.' + view][enterLeave][inOut])) {
-                                    case '[object Array]':                                    
+                                    case '[object Array]':
                                     case '[object Function]':
                                         opts = $injector.invoke(state.data['gsapifyRouter.' + view][enterLeave][inOut]);
                                         break;
@@ -146,8 +146,6 @@
                         previousOpts = getOpts(previous, view, 'leave', 'in'),
 
                         from;
-
-                    element[0].setAttribute('data-state', current.name);
 
                     if (previousOpts.priority > currentOpts.priority) {
                         from = self.transitions[previousOpts.transition];
@@ -249,22 +247,20 @@
         ];
     })
 
-    .animation('.gsapify-router', ['$rootScope', '$state', '$document', 'gsapifyRouter',
-        function($rootScope, $state, $document, gsapifyRouter) {
-            var watchInitialState = $rootScope.$watch(function() {
-                return $state.current.name;
-            }, function(name) {
-                if (name !== '') {
-                    watchInitialState();
-
-                    var elements = $document[0].querySelectorAll('.gsapify-router');
-
-                    angular.forEach(elements, function(el) {
-                        el.setAttribute('data-state', name);
-                    });
+    .directive('gsapifyRouter', ['$state',
+        function($state) {
+            return {
+                priority: 0,
+                restrict: 'C',
+                link: function($scope, $element, $attr) {
+                    $attr.$set('data-state', $state.current.name);
                 }
-            });
+            };
+        }
+    ])
 
+    .animation('.gsapify-router', ['$rootScope', 'gsapifyRouter',
+        function($rootScope, gsapifyRouter) {
             return {
                 enter: function(element, done) {
                     $rootScope.$broadcast('gsapifyRouter:enterStart', element);
