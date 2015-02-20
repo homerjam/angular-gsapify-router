@@ -126,6 +126,22 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
                     }
 
                 },
+
+                leave: {
+
+                    // define a transition directly in the state config
+                    in: {
+                        transition: {
+                            duration: 1,
+                            ease: 'Quart.easeInOut',
+                            css: {
+                                y: '100%'
+                            }
+                        },
+                    },
+
+                },
+
             }
 
         }        

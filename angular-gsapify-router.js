@@ -103,7 +103,7 @@
                     if (state.data) {
                         if (state.data['gsapifyRouter.' + view] && state.data['gsapifyRouter.' + view][enterLeave]) {
                             if (state.data['gsapifyRouter.' + view][enterLeave][inOut]) {
-                                switch (toString.call(state.data['gsapifyRouter.' + view][enterLeave][inOut])) {
+                                switch (Object.prototype.toString.call(state.data['gsapifyRouter.' + view][enterLeave][inOut])) {
                                     case '[object Array]':
                                     case '[object Function]':
                                         opts = $injector.invoke(state.data['gsapifyRouter.' + view][enterLeave][inOut]);
@@ -111,7 +111,7 @@
                                     case '[object Object]':
                                         opts = angular.extend(opts, state.data['gsapifyRouter.' + view][enterLeave][inOut]);
                                         Object.keys(opts).forEach(function(key) {
-                                            switch (toString.call(opts[key])) {
+                                            switch (Object.prototype.toString.call(opts[key])) {
                                                 case '[object Array]':
                                                 case '[object Function]':
                                                     opts[key] = $injector.invoke(opts[key]);
@@ -128,6 +128,19 @@
                     }
 
                     return opts;
+                };
+
+                var getTransition = function(transition) {
+                    var result;
+                    switch (Object.prototype.toString.call(transition)) {
+                        case '[object Object]':
+                            result = transition;
+                            break;
+                        case '[object String]':
+                            result = self.transitions[transition];
+                            break;
+                    }
+                    return result;
                 };
 
                 var enter = function(element) {
@@ -148,14 +161,14 @@
                         from;
 
                     if (previousOpts.priority > currentOpts.priority) {
-                        from = self.transitions[previousOpts.transition];
+                        from = getTransition(previousOpts.transition);
 
                         if (!from) {
                             $log.error("gsapifyRouter: Invalid transition '" + previousOpts.transition + "'");
                         }
 
                     } else {
-                        from = self.transitions[currentOpts.transition];
+                        from = getTransition(currentOpts.transition);
 
                         if (!from) {
                             $log.error("gsapifyRouter: Invalid transition '" + currentOpts.transition + "'");
@@ -204,14 +217,14 @@
                         to;
 
                     if (currentOpts.priority > previousOpts.priority) {
-                        to = self.transitions[currentOpts.transition];
+                        to = getTransition(currentOpts.transition);
 
                         if (!to) {
                             $log.error("gsapifyRouter: Invalid transition '" + currentOpts.transition + "'");
                         }
 
                     } else {
-                        to = self.transitions[previousOpts.transition];
+                        to = getTransition(previousOpts.transition);
 
                         if (!to) {
                             $log.error("gsapifyRouter: Invalid transition '" + previousOpts.transition + "'");

@@ -2,27 +2,35 @@
 
     'use strict';
 
-    angular.module('MainCtrl', []).controller('MainCtrl', ['$scope',
-        function($scope) {
-
+    angular.module('MainCtrl', []).controller('MainCtrl', ['$scope', '$state', '$log',
+        function($scope, $state, $log) {
+            $scope.$on('gsapifyRouter:leaveStart', function() {
+                $log.log('gsapifyRouter:leaveStart', $state.history[$state.history.length - 1].name);
+            });
         }
     ]);
 
-    angular.module('HomeCtrl', []).controller('HomeCtrl', ['$scope',
-        function($scope) {
-
+    angular.module('HomeCtrl', []).controller('HomeCtrl', ['$scope', '$log',
+        function($scope, $log) {
+            $scope.$on('gsapifyRouter:enterSuccess', function() {
+                $log.log('gsapifyRouter:enterSuccess', 'home');
+            });
         }
     ]);
 
-    angular.module('Page1Ctrl', []).controller('Page1Ctrl', ['$scope',
-        function($scope) {
-
+    angular.module('Page1Ctrl', []).controller('Page1Ctrl', ['$scope', '$log',
+        function($scope, $log) {
+            $scope.$on('gsapifyRouter:enterSuccess', function() {
+                $log.log('gsapifyRouter:enterSuccess', 'page1');
+            });
         }
     ]);
 
-    angular.module('Page2Ctrl', []).controller('Page2Ctrl', ['$scope',
-        function($scope) {
-
+    angular.module('Page2Ctrl', []).controller('Page2Ctrl', ['$scope', '$log',
+        function($scope, $log) {
+            $scope.$on('gsapifyRouter:enterSuccess', function() {
+                $log.log('gsapifyRouter:enterSuccess', 'page2');
+            });
         }
     ]);
 
@@ -90,7 +98,7 @@
                     scale: 0,
                     opacity: 0
                 }
-            });            
+            });
 
             // $locationProvider.html5Mode(true);
 
@@ -107,7 +115,7 @@
                 data: {
                     'gsapifyRouter.main': {
                         enter: {
-                            in : {
+                            'in': {
                                 transition: 'fadeIn',
                                 priority: 1
                             },
@@ -137,7 +145,7 @@
                             }
                         }
                     }
-                }                
+                }
             });
 
             $stateProvider.state('page2', {
@@ -151,12 +159,21 @@
                 data: {
                     'gsapifyRouter.main': {
                         enter: {
-                            in : {
-                                transition: 'slideAbove',
+                            'in': {
+                                transition: function() {
+                                    var transitions = Object.keys(gsapifyRouterProvider.transitions);
+                                    return transitions[transitions.length * Math.random() << 0];
+                                },
                                 priority: 2
                             },
                             out: {
-                                transition: 'slideBelow',
+                                transition: {
+                                    duration: 1,
+                                    ease: 'Quart.easeInOut',
+                                    css: {
+                                        y: '100%'
+                                    }
+                                },
                                 priority: 2
                             }
                         },
@@ -165,7 +182,7 @@
                                 transition: 'fadeOut',
                                 priority: 1
                             },
-                            in : {
+                            'in': {
                                 transition: 'fadeIn',
                                 priority: 1
                             }
@@ -176,5 +193,11 @@
 
         }
     ]);
+
+    angular.module("ExampleApp").run(["$templateCache", function($templateCache) {
+        $templateCache.put("example/home.html", "<div class=\"wrapper\" style=\"background: #81B270\"><h1>Home</h1></div>");
+        $templateCache.put("example/page1.html", "<div class=\"wrapper\" style=\"background: #FF7F40\"><h1>Page 1</h1></div>");
+        $templateCache.put("example/page2.html", "<div class=\"wrapper\" style=\"background: #7F80B2\"><h1>Page 2</h1></div>");
+    }]);
 
 })();
