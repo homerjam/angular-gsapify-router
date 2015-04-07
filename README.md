@@ -31,6 +31,9 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
         leave: 'fade'
 
     };
+    
+    	// Optionally enable transition on initial load
+    	gsapifyRouterProvider.initialTransitionEnabled = true; // defaults to false
 
 	// Add a new transition
 	gsapifyRouterProvider.transition('slideToFromRight', {
