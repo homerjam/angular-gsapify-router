@@ -175,7 +175,7 @@
                         }
                     }
 
-                    var duration = $state.previous.name === '' ? 0 : from.duration, // don't trigger transition on boot
+                    var duration = $state.previous.name === '' && typeof self.initialTransitionEnabled === 'undefined' ? 0 : from.duration, // don't trigger transition on boot
                         vars = angular.copy(from);
 
                     vars.onStart = function() {
