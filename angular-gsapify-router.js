@@ -16,6 +16,8 @@
 
     .provider('gsapifyRouter', function() {
         var self = this;
+        
+        self.initialTransitionEnabled = false;
 
         self.transitions = {};
 
@@ -175,7 +177,7 @@
                         }
                     }
 
-                    var duration = $state.previous.name === '' && typeof self.initialTransitionEnabled === 'undefined' ? 0 : from.duration, // don't trigger transition on boot
+                    var duration = $state.previous.name === '' && !self.initialTransitionEnabled ? 0 : from.duration,
                         vars = angular.copy(from);
 
                     vars.onStart = function() {
