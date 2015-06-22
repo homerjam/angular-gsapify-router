@@ -85,6 +85,7 @@
         self.$get = ['$rootScope', '$state', '$document', '$injector', '$timeout', '$q', '$log', 'TweenMax',
             function($rootScope, $state, $document, $injector, $timeout, $q, $log, TweenMax) {
                 $state.history = [];
+                $state.previous = {};
 
                 $rootScope.$on('$stateChangeSuccess', function(event, toState, toParams, fromState, fromParams) {
                     $state.previous = fromState;
