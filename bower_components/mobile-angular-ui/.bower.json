@@ -5,7 +5,17 @@
     "mcasimir <maurizio.cas@gmail.com>"
   ],
   "description": "Mobile UI for Bootstrap 3 and Angular JS",
-  "main": "dist/js/mobile-angular-ui.min.js",
+  "main": [
+    "dist/css/mobile-angular-ui-hover.css",
+    "dist/css/mobile-angular-ui-base.css",
+    "dist/css/mobile-angular-ui-desktop.css",
+    "dist/js/mobile-angular-ui.min.js",
+    "dist/fonts/FontAwesome.otf",
+    "dist/fonts/fontawesome-webfont.eot",
+    "dist/fonts/fontawesome-webfont.svg",
+    "dist/fonts/fontawesome-webfont.ttf",
+    "dist/fonts/fontawesome-webfont.woff"
+  ],
   "keywords": [
     "mobile-angular-ui",
     "angularjs",
@@ -26,20 +36,20 @@
     "gh-pages",
     "tmp"
   ],
-  "dependencies": {
-    "font-awesome": "~4.1.0",
-    "bootstrap": "~3.1.1",
-    "fastclick": "~1.0.0",
-    "overthrow": "~0.7.0"
+  "devDependencies": {
+    "font-awesome": "4",
+    "bootstrap": "3",
+    "fastclick": "1",
+    "overthrow": "0.7"
   },
-  "version": "1.1.0-beta.29",
-  "_release": "1.1.0-beta.29",
+  "version": "1.2.0-beta.11",
+  "_release": "1.2.0-beta.11",
   "_resolution": {
     "type": "version",
-    "tag": "1.1.0-beta.29",
-    "commit": "2802de23d325364a35c6c2b7c28524ff8bcd46c9"
+    "tag": "1.2.0-beta.11",
+    "commit": "7820eb0ec6e3769739dc52e09d67f81bfa8752cf"
   },
   "_source": "git://github.com/mcasimir/mobile-angular-ui.git",
-  "_target": "~1.1.0",
+  "_target": "~1.2.0",
   "_originalSource": "mobile-angular-ui"
 }

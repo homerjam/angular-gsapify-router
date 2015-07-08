@@ -5,7 +5,9 @@
     angular.module('MainCtrl', []).controller('MainCtrl', ['$scope', '$state', '$log',
         function($scope, $state, $log) {
             $scope.$on('gsapifyRouter:leaveStart', function() {
-                $log.log('gsapifyRouter:leaveStart', $state.history[$state.history.length - 1].name);
+                if ($state.history.length) {
+                    $log.log('gsapifyRouter:leaveStart', $state.history[$state.history.length - 1].name);
+                }
             });
         }
     ]);

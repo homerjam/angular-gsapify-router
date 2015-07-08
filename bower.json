@@ -11,10 +11,10 @@
   "dependencies": {
     "angular": ">=1.2.0",
     "angular-animate": ">=1.2.0",
-    "gsap": "~1.13.0",
-    "angular-ui-router": "~0.2.11"
+    "gsap": "~1.17.0",
+    "angular-ui-router": "~0.2.15"
   },
   "devDependencies": {
-    "mobile-angular-ui": "~1.1.0"
+    "mobile-angular-ui": "~1.2.0"
   }
 }
