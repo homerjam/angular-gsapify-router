@@ -16,7 +16,7 @@
 
     .provider('gsapifyRouter', function() {
         var self = this;
-        
+
         self.initialTransitionEnabled = false;
 
         self.transitions = {};
@@ -288,7 +288,7 @@
                     });
 
                     return function(cancelled) {
-                        if (cancelled) {
+                        if (cancelled !== false) {
                             element.remove();
                         }
                     };
