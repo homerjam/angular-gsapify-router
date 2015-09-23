@@ -288,6 +288,14 @@
                     });
 
                     return function(cancelled) {
+                        if (angular.version.major <= 1 && angular.version.minor <= 3) {
+                            if (cancelled === true) {
+                                element.remove();
+                            }
+
+                            return;
+                        }
+
                         if (cancelled !== false) {
                             element.remove();
                         }
