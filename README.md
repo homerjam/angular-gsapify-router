@@ -159,3 +159,15 @@ In your templates:
 <!-- add 'gsapify-router' class to ui-view element -->
 <div ui-view="main" class="gsapify-router" autoscroll="false"></div>
 ```
+
+## FAQ
+
+#### My views jump around when the transition occurs, WTF?!
+
+This happens because during the transition the incoming and outgoing views both exist within the dom as sibling nodes. One solution is to use absolute/fixed positioning, otherwise you can try adding the following to your css.
+
+```css
+.gsapify-router-in-setup {
+    display: none;
+}
+```
