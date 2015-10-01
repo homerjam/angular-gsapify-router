@@ -153,7 +153,7 @@
 
                     element.addClass('gsapify-router-in-setup');
 
-                    var view = element.attr('ui-view'),
+                    var view = element.attr('ui-view') || element.attr('data-ui-view'),
 
                         current = $state.current,
                         previous = $state.previous,
@@ -209,7 +209,7 @@
                     element.removeClass('gsapify-router-in gsapify-router-in-end');
                     element.addClass('gsapify-router-out-setup');
 
-                    var view = element.attr('ui-view'),
+                    var view = element.attr('ui-view') || element.attr('data-ui-view'),
 
                         current = $state.current,
                         previous = $state.previous,
