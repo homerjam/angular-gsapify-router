@@ -9,8 +9,8 @@
     "dist/css/mobile-angular-ui-hover.css",
     "dist/css/mobile-angular-ui-base.css",
     "dist/css/mobile-angular-ui-desktop.css",
-    "dist/js/mobile-angular-ui.min.js",
-    "dist/fonts/FontAwesome.otf",
+    "dist/js/mobile-angular-ui.js",
+    "dist/js/mobile-angular-ui.gestures.js",
     "dist/fonts/fontawesome-webfont.eot",
     "dist/fonts/fontawesome-webfont.svg",
     "dist/fonts/fontawesome-webfont.ttf",
@@ -30,11 +30,7 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests",
-    "site",
-    "experiments",
-    "gh-pages",
-    "tmp"
+    "ROADMAP.tasks"
   ],
   "devDependencies": {
     "font-awesome": "4",

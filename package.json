@@ -1,18 +1,25 @@
 {
   "name": "angular-gsapify-router",
-  "version": "0.0.0",
+  "version": "0.0.28",
   "description": "Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)",
-  "main": "angular-gsapify-router.js",
-  "directories": {
-    "example": "example"
+  "main": "index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/homerjam/angular-gsapify-router"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "Homerjam <jameshomer85@gmail.com>",
   "license": "MIT",
+  "dependencies": {
+    "angular": ">=1.2.0",
+    "angular-animate": ">=1.2.0",
+    "gsap": "~1.18.0",
+    "angular-ui-router": "~0.2.15"
+  },
   "devDependencies": {
-    "gulp": "~3.8.7",
-    "gulp-webserver": "~0.7.2"
+    "gulp": "^3.9.0",
+    "gulp-webserver": "^0.9.1"
   }
 }

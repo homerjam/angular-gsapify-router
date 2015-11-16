@@ -10,7 +10,7 @@ body {
 	user-select: none;
 }
 
-#main {
+[ui-view="main"] {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -19,7 +19,7 @@ body {
 	z-index: 0;
 }
 
-#main .wrapper {
+[ui-view="main"] .wrapper {
 	position: absolute;
 	width: 100%;
 	height: 100%;
@@ -27,7 +27,7 @@ body {
 	color: #fff;
 }
 
-#main .wrapper h1 {
+[ui-view="main"] .wrapper h1 {
 	position: relative;
 	top: 50%;
 	-webkit-transform: translateY(-50%);

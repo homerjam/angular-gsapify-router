@@ -1,5 +1,12 @@
 # Mobile Angular Ui Changelog
 
+### v. 1.2.0-beta.10
+
+_Fri Dec 19 2014_
+
+`ui-if/ui-hide/ui-show/ui-class` does not evaluate with scope by default anymore.
+You should use `ui-scope-context` to inject scope vars into condition context.
+
 ### v. 1.2.0-beta.9
 
 - Fix #183 (padding not removed when sidebar-header/footer are removed)
@@ -33,14 +40,6 @@ _Thu Dec 18 2014_
 - Added ng-swipe-left/ng-swipe-right directives
 - Improved tests for SharedState
 - Scaffolded specs for ui-switch
-
-### v. 1.2.0-beta.4 - v. 1.2.0-beta.5
-
-_Tue Dec 16 2014_
-
-- Fixes $drag causing exception or warning due to misused `insertRule`
-- Doc comments in drag.js now reflects $drag actual interface
-
 
 ### v. 1.2.0-beta.4 - v. 1.2.0-beta.5
 

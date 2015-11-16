@@ -9,8 +9,8 @@
     "dist/css/mobile-angular-ui-hover.css",
     "dist/css/mobile-angular-ui-base.css",
     "dist/css/mobile-angular-ui-desktop.css",
-    "dist/js/mobile-angular-ui.min.js",
-    "dist/fonts/FontAwesome.otf",
+    "dist/js/mobile-angular-ui.js",
+    "dist/js/mobile-angular-ui.gestures.js",
     "dist/fonts/fontawesome-webfont.eot",
     "dist/fonts/fontawesome-webfont.svg",
     "dist/fonts/fontawesome-webfont.ttf",
@@ -30,11 +30,7 @@
     "node_modules",
     "bower_components",
     "test",
-    "tests",
-    "site",
-    "experiments",
-    "gh-pages",
-    "tmp"
+    "ROADMAP.tasks"
   ],
   "devDependencies": {
     "font-awesome": "4",
@@ -42,12 +38,12 @@
     "fastclick": "1",
     "overthrow": "0.7"
   },
-  "version": "1.2.0-beta.11",
-  "_release": "1.2.0-beta.11",
+  "version": "1.2.0-rc.3",
+  "_release": "1.2.0-rc.3",
   "_resolution": {
     "type": "version",
-    "tag": "1.2.0-beta.11",
-    "commit": "7820eb0ec6e3769739dc52e09d67f81bfa8752cf"
+    "tag": "v1.2.0-rc.3",
+    "commit": "6077488d3c6b9383e009f5488936ae3ac5c8a8e6"
   },
   "_source": "git://github.com/mcasimir/mobile-angular-ui.git",
   "_target": "~1.2.0",
