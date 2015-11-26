@@ -8,9 +8,11 @@ Angular UI-Router animation directive allowing configuration of state transition
 
 ## Installation
 
-`$ bower install angular-gsapify-router --save`
+`$ npm i -S angular-gsapify-router`
 
 ## Usage
+
+First include [TweenMax](http://greensock.com/tweenmax) (part of GSAP) on your page or in your build
 
 In your main app file eg. `app.js`:
 
