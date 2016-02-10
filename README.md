@@ -33,7 +33,7 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
         leave: 'fade'
 
     };
-    
+
 	// Optionally enable transition on initial load
 	gsapifyRouterProvider.initialTransitionEnabled = true; // defaults to false
 
@@ -143,13 +143,16 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
                                 y: '100%'
                             }
                         },
+
+                        // add event listener to $rootScope to trigger transition
+                        trigger: 'viewInitialised'
                     },
 
                 },
 
             }
 
-        }        
+        }
     });
 
 });

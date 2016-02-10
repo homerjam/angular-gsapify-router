@@ -1,14 +1,13 @@
-/*
-
-    Name: angular-gsapify-router
-    Description: Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)
-    Author: jameshomer85@gmail.com
-    Licence: MIT
-    Usage: http://github.com/homerjam/angular-gsapify-router
-
-*/
 (function () {
   'use strict';
+
+  /**
+  * Name: angular-gsapify-router
+  * Description: Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)
+  * Author: jameshomer85@gmail.com
+  * Licence: MIT
+  * Usage: http://github.com/homerjam/angular-gsapify-router
+  */
 
   angular.module('hj.gsapifyRouter', ['ui.router', 'ngAnimate'])
 
@@ -84,7 +83,6 @@
 
       self.$get = ['$rootScope', '$state', '$document', '$injector', '$timeout', '$q', '$log', 'TweenMax',
         function ($rootScope, $state, $document, $injector, $timeout, $q, $log, TweenMax) {
-
           var getOpts = function (state, view, enterLeave, inOut) {
             var opts = {
               transition: self.defaults[inOut === 'in' ? 'enter' : 'leave'],
@@ -152,22 +150,22 @@
             var from;
 
             if (previousOpts.priority > currentOpts.priority) {
-              from = getTransition(previousOpts.transition);
-
-              if (!from) {
-                $log.error("gsapifyRouter: Invalid transition '" + previousOpts.transition + "'");
-              }
+              from = previousOpts;
 
             } else {
-              from = getTransition(currentOpts.transition);
-
-              if (!from) {
-                $log.error("gsapifyRouter: Invalid transition '" + currentOpts.transition + "'");
-              }
+              from = currentOpts;
             }
 
-            var duration = from.duration;
-            var vars = angular.copy(from);
+            var trigger = from.trigger || getOpts(previous, view, 'leave', 'out').trigger;
+
+            var transition = getTransition(from.transition);
+
+            if (!transition) {
+              return $log.error("gsapifyRouter: Invalid transition '" + transition + "'");
+            }
+
+            var duration = transition.duration;
+            var vars = angular.copy(transition);
 
             vars.onStart = function () {
               element.css('visibility', 'visible');
@@ -189,7 +187,16 @@
               vars.onStart();
             }
 
-            TweenMax.from(element, duration, vars);
+            if (trigger) {
+              var triggerEvent = $rootScope.$on(trigger, function () {
+                triggerEvent();
+
+                TweenMax.from(element, duration, vars);
+              });
+
+            } else {
+              TweenMax.from(element, duration, vars);
+            }
 
             return deferred.promise;
           };
@@ -211,22 +218,22 @@
             var to;
 
             if (currentOpts.priority > previousOpts.priority) {
-              to = getTransition(currentOpts.transition);
-
-              if (!to) {
-                $log.error("gsapifyRouter: Invalid transition '" + currentOpts.transition + "'");
-              }
+              to = currentOpts;
 
             } else {
-              to = getTransition(previousOpts.transition);
-
-              if (!to) {
-                $log.error("gsapifyRouter: Invalid transition '" + previousOpts.transition + "'");
-              }
+              to = previousOpts;
             }
 
-            var duration = to.duration;
-            var vars = angular.copy(to);
+            var trigger = to.trigger || getOpts(current, view, 'enter', 'in').trigger;
+
+            var transition = getTransition(to.transition);
+
+            if (!transition) {
+              return $log.error("gsapifyRouter: Invalid transition '" + transition + "'");
+            }
+
+            var duration = transition.duration;
+            var vars = angular.copy(transition);
 
             vars.onStart = function () {
               element.removeClass('gsapify-router-out-setup');
@@ -242,7 +249,16 @@
               });
             };
 
-            TweenMax.to(element, duration, vars);
+            if (trigger) {
+              var triggerEvent = $rootScope.$on(trigger, function () {
+                triggerEvent();
+
+                TweenMax.to(element, duration, vars);
+              });
+
+            } else {
+              TweenMax.to(element, duration, vars);
+            }
 
             return deferred.promise;
           };
