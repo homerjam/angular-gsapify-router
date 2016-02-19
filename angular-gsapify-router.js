@@ -185,6 +185,10 @@
 
             if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
               vars.onStart();
+
+              $timeout(vars.onComplete);
+
+              return deferred.promise;
             }
 
             if (trigger) {
@@ -248,6 +252,14 @@
                 view: view,
               });
             };
+
+            if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
+              vars.onStart();
+
+              $timeout(vars.onComplete);
+
+              return deferred.promise;
+            }
 
             if (trigger) {
               var triggerEvent = $rootScope.$on(trigger, function () {
