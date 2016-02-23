@@ -81,6 +81,8 @@
         self.transitions[transitionName] = transitionOptions;
       };
 
+      self.scrollRecallEvent = 'leaveSuccess';
+
       self.$get = ['$rootScope', '$state', '$document', '$injector', '$timeout', '$q', '$log', 'TweenMax',
         function ($rootScope, $state, $document, $injector, $timeout, $q, $log, TweenMax) {
           var getOpts = function (state, view, enterLeave, inOut) {
@@ -89,29 +91,28 @@
               priority: 0,
             };
 
-            if (state.data) {
-              if (state.data['gsapifyRouter.' + view] && state.data['gsapifyRouter.' + view][enterLeave]) {
-                if (state.data['gsapifyRouter.' + view][enterLeave][inOut]) {
-                  switch (Object.prototype.toString.call(state.data['gsapifyRouter.' + view][enterLeave][inOut])) {
-                    case '[object Array]':
-                    case '[object Function]':
-                      opts = $injector.invoke(state.data['gsapifyRouter.' + view][enterLeave][inOut]);
-                      break;
-                    case '[object Object]':
-                      opts = angular.extend(opts, state.data['gsapifyRouter.' + view][enterLeave][inOut]);
-                      Object.keys(opts).forEach(function (key) {
-                        switch (Object.prototype.toString.call(opts[key])) {
-                          case '[object Array]':
-                          case '[object Function]':
-                            opts[key] = $injector.invoke(opts[key]);
-                            break;
-                        }
-                      });
-                      break;
-                    case '[object String]':
-                      opts.transition = state.data['gsapifyRouter.' + view][enterLeave][inOut];
-                      break;
-                  }
+            if (state.data && state.data['gsapifyRouter.' + view] && state.data['gsapifyRouter.' + view][enterLeave]) {
+              var dataOpts = state.data['gsapifyRouter.' + view][enterLeave][inOut];
+
+              if (dataOpts) {
+                var dataOptsType = Object.prototype.toString.call(dataOpts);
+
+                if (dataOptsType === '[object Array]' || dataOptsType === '[object Function]') {
+                  opts = $injector.invoke(dataOpts);
+                }
+
+                if (dataOptsType === '[object Object]') {
+                  opts = angular.extend(opts, dataOpts);
+                  Object.keys(opts).forEach(function (key) {
+                    var keyType = Object.prototype.toString.call(opts[key]);
+                    if (keyType === '[object Array]' || keyType === '[object Function]') {
+                      opts[key] = $injector.invoke(opts[key]);
+                    }
+                  });
+                }
+
+                if (dataOptsType === '[object String]') {
+                  opts.transition = dataOpts;
                 }
               }
             }
@@ -121,14 +122,21 @@
 
           var getTransition = function (transition) {
             var result;
-            switch (Object.prototype.toString.call(transition)) {
-              case '[object Object]':
-                result = transition;
-                break;
-              case '[object String]':
-                result = self.transitions[transition];
-                break;
+            var transitionType = Object.prototype.toString.call(transition);
+
+            if (transitionType === '[object Object]') {
+              result = transition;
             }
+
+            if (transitionType === '[object String]') {
+              result = self.transitions[transition];
+
+              var resultType = Object.prototype.toString.call(result);
+              if (resultType === '[object Array]' || resultType === '[object Function]') {
+                result = $injector.invoke(result);
+              }
+            }
+
             return result;
           };
 
@@ -281,6 +289,7 @@
             transitions: self.transitions,
             defaults: self.defaults,
             initialTransitionEnabled: self.initialTransitionEnabled,
+            scrollRecallEvent: self.scrollRecallEvent,
           };
         },
       ];
@@ -326,8 +335,83 @@
         return {
           priority: 0,
           restrict: 'C',
-          link: function ($scope, $element, $attr) {
-            $attr.$set('data-state', $state.current.name);
+          link: function ($scope, $element, $attrs) {
+            $attrs.$set('data-state', $state.current.name);
+          },
+        };
+      },
+    ])
+
+    .service('scrollRecallService', ['$rootScope', '$window', '$document', '$timeout', '$state', 'gsapifyRouter',
+      function ($rootScope, $window, $document, $timeout, $state, gsapifyRouter) {
+        var service = {
+          view: null,
+        };
+
+        var getCurrentStateKey = function () {
+          var currentState = {
+            name: $state.current.name,
+            params: $state.params,
+          };
+
+          return JSON.stringify(currentState);
+        };
+
+        var scrollMap = {};
+        var currentStateKey = getCurrentStateKey();
+
+        $rootScope.$on('$stateChangeStart', function () {
+          if (!service.view) {
+            return;
+          }
+
+          scrollMap[currentStateKey] = {
+            x: $window.scrollX,
+            y: $window.scrollY,
+          };
+        });
+
+        $rootScope.$on('$stateChangeSuccess', function () {
+          if (!service.view) {
+            return;
+          }
+
+          currentStateKey = getCurrentStateKey();
+        });
+
+        $rootScope.$on('gsapifyRouter:' + gsapifyRouter.scrollRecallEvent, function (event, element) {
+          if (!service.view) {
+            return;
+          }
+
+          var view = element.attr('ui-view') || element.attr('data-ui-view');
+
+          if (view === service.view) {
+            var prevState = $state.history[$state.history.length - 2];
+
+            if (prevState) {
+              var prevStateKey = JSON.stringify(prevState);
+
+              if (currentStateKey === prevStateKey) {
+                $window.scrollTo(scrollMap[prevStateKey].x, scrollMap[prevStateKey].y);
+                return;
+              }
+            }
+
+            $window.scrollTo(0, 0);
+          }
+        });
+
+        return service;
+      }])
+
+    .directive('scrollRecall', ['scrollRecallService',
+      function (scrollRecallService) {
+        return {
+          priority: 0,
+          restrict: 'A',
+          link: function ($scope, $element, $attrs) {
+            scrollRecallService.view = $attrs.uiView;
           },
         };
       },

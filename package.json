@@ -1,6 +1,6 @@
 {
   "name": "angular-gsapify-router",
-  "version": "0.0.30",
+  "version": "0.0.31",
   "description": "Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)",
   "main": "index.js",
   "repository": {
