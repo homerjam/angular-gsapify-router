@@ -311,23 +311,19 @@
           name: fromState.name,
           params: fromParams,
         });
-      });
 
-      if (gsapifyRouter.initialTransitionEnabled) {
-        $timeout(function () {
+        if (gsapifyRouter.initialTransitionEnabled) {
+          gsapifyRouter.initialTransitionEnabled = false;
+
           var initialState = [$state.current.name, $state.current.params];
 
           $state.go('gsapifyRouterBlankState');
 
           $timeout(function () {
             $state.go.apply(null, initialState);
-
-            $timeout(function () {
-              gsapifyRouter.initialTransitionEnabled = false;
-            });
           });
-        });
-      }
+        }
+      });
     }])
 
     .directive('gsapifyRouter', ['$state',
