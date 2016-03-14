@@ -165,6 +165,13 @@ In your templates:
 <div ui-view="main" class="gsapify-router" autoscroll="false"></div>
 ```
 
+#### scrollRecall directive
+Optionally add `scrollRecall` directive to remember and return to scroll position of previous state:
+```html
+<!-- add scrollRecall directive -->
+<div ui-view="main" class="gsapify-router" scroll-recall></div>
+```
+
 ## FAQ
 
 #### My views jump around when the transition occurs, WTF?!
