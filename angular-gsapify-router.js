@@ -388,7 +388,7 @@
             if (prevState) {
               var prevStateKey = JSON.stringify(prevState);
 
-              if (currentStateKey === prevStateKey) {
+              if (scrollMap[prevStateKey] && currentStateKey === prevStateKey) {
                 $window.scrollTo(scrollMap[prevStateKey].x, scrollMap[prevStateKey].y);
                 return;
               }
