@@ -95,23 +95,20 @@
               var dataOpts = state.data['gsapifyRouter.' + view][enterLeave][inOut];
 
               if (dataOpts) {
-                var dataOptsType = Object.prototype.toString.call(dataOpts);
-
-                if (dataOptsType === '[object Array]' || dataOptsType === '[object Function]') {
+                if (angular.isArray(dataOpts) || angular.isFunction(dataOpts)) {
                   opts = $injector.invoke(dataOpts);
                 }
 
-                if (dataOptsType === '[object Object]') {
+                if (angular.isObject(dataOpts)) {
                   opts = angular.extend(opts, dataOpts);
                   Object.keys(opts).forEach(function (key) {
-                    var keyType = Object.prototype.toString.call(opts[key]);
-                    if (keyType === '[object Array]' || keyType === '[object Function]') {
+                    if (angular.isArray(opts[key]) || angular.isFunction(opts[key])) {
                       opts[key] = $injector.invoke(opts[key]);
                     }
                   });
                 }
 
-                if (dataOptsType === '[object String]') {
+                if (angular.isString(dataOpts)) {
                   opts.transition = dataOpts;
                 }
               }
@@ -122,17 +119,15 @@
 
           var getTransition = function (transition) {
             var result;
-            var transitionType = Object.prototype.toString.call(transition);
 
-            if (transitionType === '[object Object]') {
+            if (angular.isObject(transition)) {
               result = transition;
             }
 
-            if (transitionType === '[object String]') {
+            if (angular.isString(transition)) {
               result = self.transitions[transition];
 
-              var resultType = Object.prototype.toString.call(result);
-              if (resultType === '[object Array]' || resultType === '[object Function]') {
+              if (angular.isArray(result) || angular.isFunction(result)) {
                 result = $injector.invoke(result);
               }
             }
