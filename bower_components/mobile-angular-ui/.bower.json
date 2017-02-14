@@ -38,14 +38,14 @@
     "fastclick": "1",
     "overthrow": "0.7"
   },
-  "version": "1.2.0-rc.3",
-  "_release": "1.2.0-rc.3",
+  "version": "1.2.1",
+  "_release": "1.2.1",
   "_resolution": {
     "type": "version",
-    "tag": "v1.2.0-rc.3",
-    "commit": "6077488d3c6b9383e009f5488936ae3ac5c8a8e6"
+    "tag": "1.2.1",
+    "commit": "d5eeb6ed555842cf1e9995c23d7f643a8106f53c"
   },
-  "_source": "git://github.com/mcasimir/mobile-angular-ui.git",
+  "_source": "https://github.com/mcasimir/mobile-angular-ui.git",
   "_target": "~1.2.0",
   "_originalSource": "mobile-angular-ui"
 }

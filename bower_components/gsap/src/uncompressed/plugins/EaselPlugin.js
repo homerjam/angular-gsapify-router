@@ -1,9 +1,9 @@
 /*!
- * VERSION: 0.1.6
- * DATE: 2014-07-17
- * UPDATES AND DOCS AT: http://www.greensock.com
+ * VERSION: 0.2.1
+ * DATE: 2017-01-17
+ * UPDATES AND DOCS AT: http://greensock.com
  *
- * @license Copyright (c) 2008-2015, GreenSock. All rights reserved.
+ * @license Copyright (c) 2008-2017, GreenSock. All rights reserved.
  * This work is subject to the terms at http://greensock.com/standard-license or for
  * Club GreenSock members, the software agreement that was issued with your membership.
  * 
@@ -229,15 +229,19 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 	_gsScope._gsDefine.plugin({
 		propName: "easel",
 		priority: -1,
-		version: "0.1.6",
+		version: "0.2.1",
 		API: 2,
 
 		//called when the tween renders for the first time. This is where initial values should be recorded and any setup routines should run.
-		init: function(target, value, tween) {
+		init: function(target, value, tween, index) {
 			this._target = target;
-			var p, pt, tint, colorMatrix;
+			var p, pt, tint, colorMatrix, end, labels, i;
 			for (p in value) {
 
+				end = value[p];
+				if (typeof(end) === "function") {
+					end = end(index, target);
+				}
 				if (p === "colorFilter" || p === "tint" || p === "tintAmount" || p === "exposure" || p === "brightness") {
 					if (!tint) {
 						_parseColorFilter(target, value.colorFilter || value, this);
@@ -251,8 +255,15 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 					}
 
 				} else if (p === "frame") {
-					this._firstPT = pt = {_next:this._firstPT, t:target, p:"gotoAndStop", s:target.currentFrame, f:true, n:"frame", pr:0, type:0, r:true};
-					pt.c = (typeof(value[p]) === "number") ? value[p] - pt.s : (typeof(value[p]) === "string") ? parseFloat(value[p].split("=").join("")) : 0;
+					this._firstPT = pt = {_next:this._firstPT, t:target, p:"gotoAndStop", s:target.currentFrame, f:true, n:"frame", pr:0, type:0, m:Math.round};
+					if (typeof(end) === "string" && end.charAt(1) !== "=" && (labels = target.labels)) {
+						for (i = 0; i < labels.length; i++) {
+							if (labels[i].label === end) {
+								end = labels[i].position;
+							}
+						}
+					}
+					pt.c = (typeof(end) === "number") ? end - pt.s : parseFloat((end+"").split("=").join(""));
 					if (pt._next) {
 						pt._next._prev = pt;
 					}
@@ -260,7 +271,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				} else if (target[p] != null) {
 					this._firstPT = pt = {_next:this._firstPT, t:target, p:p, f:(typeof(target[p]) === "function"), n:p, pr:0, type:0};
 					pt.s = (!pt.f) ? parseFloat(target[p]) : target[ ((p.indexOf("set") || typeof(target["get" + p.substr(3)]) !== "function") ? p : "get" + p.substr(3)) ]();
-					pt.c = (typeof(value[p]) === "number") ? value[p] - pt.s : (typeof(value[p]) === "string") ? parseFloat(value[p].split("=").join("")) : 0;
+					pt.c = (typeof(end) === "number") ? end - pt.s : (typeof(end) === "string") ? parseFloat(end.split("=").join("")) : 0;
 
 					if (pt._next) {
 						pt._next._prev = pt;
@@ -278,8 +289,8 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				val;
 			while (pt) {
 				val = pt.c * v + pt.s;
-				if (pt.r) {
-					val = Math.round(val);
+				if (pt.m) {
+					val = pt.m(val, pt.t);
 				} else if (val < min && val > -min) {
 					val = 0;
 				}
@@ -298,3 +309,16 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 	});
 
 }); if (_gsScope._gsDefine) { _gsScope._gsQueue.pop()(); }
+//export to AMD/RequireJS and CommonJS/Node (precursor to full modular build system coming at a later date)
+(function(name) {
+	"use strict";
+	var getGlobal = function() {
+		return (_gsScope.GreenSockGlobals || _gsScope)[name];
+	};
+	if (typeof(define) === "function" && define.amd) { //AMD
+		define(["TweenLite"], getGlobal);
+	} else if (typeof(module) !== "undefined" && module.exports) { //node
+		require("../TweenLite.js");
+		module.exports = getGlobal();
+	}
+}("EaselPlugin"));

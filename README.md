@@ -34,9 +34,6 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 
     };
 
-	// Optionally enable transition on initial load
-	gsapifyRouterProvider.initialTransitionEnabled = true; // defaults to false
-
 	// Add a new transition
 	gsapifyRouterProvider.transition('slideToFromRight', {
 
@@ -162,7 +159,7 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 In your templates:
 ```html
 <!-- add 'gsapify-router' class to ui-view element -->
-<div ui-view="main" class="gsapify-router" autoscroll="false"></div>
+<div ui-view="main" class="gsapify-router"></div>
 ```
 
 #### scrollRecall directive

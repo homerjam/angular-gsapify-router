@@ -11,12 +11,8 @@
 
   angular.module('hj.gsapifyRouter', ['ui.router', 'ngAnimate'])
 
-    .constant('TweenMax', TweenMax)
-
     .provider('gsapifyRouter', function () {
       var self = this;
-
-      self.initialTransitionEnabled = false;
 
       self.transitions = {};
 
@@ -83,8 +79,8 @@
 
       self.scrollRecallEvent = 'leaveSuccess';
 
-      self.$get = ['$rootScope', '$state', '$document', '$injector', '$timeout', '$q', '$log', 'TweenMax',
-        function ($rootScope, $state, $document, $injector, $timeout, $q, $log, TweenMax) {
+      self.$get = ['$rootScope', '$state', '$document', '$injector', '$window', '$timeout', '$q', '$log',
+        function ($rootScope, $state, $document, $injector, $window, $timeout, $q, $log) {
           var getOpts = function (state, view, enterLeave, inOut) {
             var opts = {
               transition: self.defaults[inOut === 'in' ? 'enter' : 'leave'],
@@ -135,11 +131,32 @@
             return result;
           };
 
+          var onMutate = function (element, done) {
+            try {
+              var observer = new MutationObserver(function (mutations) {
+                observer.disconnect();
+
+                $window.requestAnimationFrame(function () {
+                  $timeout(done);
+                });
+              });
+
+              observer.observe(element[0], {
+                attributes: true,
+                childList: false,
+                characterData: false,
+              });
+            } catch (error) {
+              $timeout(done);
+            }
+          };
+
           var enter = function (element) {
             var deferred = $q.defer();
 
             element.css('visibility', 'hidden');
 
+            element.removeClass('gsapify-router-init');
             element.addClass('gsapify-router-in-setup');
 
             var view = element.attr('ui-view') || element.attr('data-ui-view');
@@ -154,7 +171,6 @@
 
             if (previousOpts.priority > currentOpts.priority) {
               from = previousOpts;
-
             } else {
               from = currentOpts;
             }
@@ -167,8 +183,13 @@
               return $log.error("gsapifyRouter: Invalid transition '" + transition + "'");
             }
 
+            var name = transition.name;
             var duration = transition.duration;
             var vars = angular.copy(transition);
+
+            if (name) {
+              element.attr('data-transition', name);
+            }
 
             vars.onStart = function () {
               element.css('visibility', 'visible');
@@ -186,23 +207,30 @@
               });
             };
 
-            if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
-              vars.onStart();
+            function go () {
+              if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
+                onMutate(element, function () {
+                  vars.onStart();
 
-              $timeout(vars.onComplete);
+                  onMutate(element, function () {
+                    vars.onComplete();
+                  });
+                });
 
-              return deferred.promise;
+                return;
+              }
+
+              TweenMax.from(element, duration, vars);
             }
 
             if (trigger) {
               var triggerEvent = $rootScope.$on(trigger, function () {
                 triggerEvent();
 
-                TweenMax.from(element, duration, vars);
+                go();
               });
-
             } else {
-              TweenMax.from(element, duration, vars);
+              go();
             }
 
             return deferred.promise;
@@ -226,7 +254,6 @@
 
             if (currentOpts.priority > previousOpts.priority) {
               to = currentOpts;
-
             } else {
               to = previousOpts;
             }
@@ -239,8 +266,13 @@
               return $log.error("gsapifyRouter: Invalid transition '" + transition + "'");
             }
 
+            var name = transition.name;
             var duration = transition.duration;
             var vars = angular.copy(transition);
+
+            if (name) {
+              element.attr('data-transition', name);
+            }
 
             vars.onStart = function () {
               element.removeClass('gsapify-router-out-setup');
@@ -256,23 +288,30 @@
               });
             };
 
-            if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
-              vars.onStart();
+            function go () {
+              if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
+                onMutate(element, function () {
+                  vars.onStart();
 
-              $timeout(vars.onComplete);
+                  onMutate(element, function () {
+                    vars.onComplete();
+                  });
+                });
 
-              return deferred.promise;
+                return;
+              }
+
+              TweenMax.to(element, duration, vars);
             }
 
             if (trigger) {
               var triggerEvent = $rootScope.$on(trigger, function () {
                 triggerEvent();
 
-                TweenMax.to(element, duration, vars);
+                go();
               });
-
             } else {
-              TweenMax.to(element, duration, vars);
+              go();
             }
 
             return deferred.promise;
@@ -283,7 +322,6 @@
             leave: leave,
             transitions: self.transitions,
             defaults: self.defaults,
-            initialTransitionEnabled: self.initialTransitionEnabled,
             scrollRecallEvent: self.scrollRecallEvent,
           };
         },
@@ -306,28 +344,20 @@
           name: fromState.name,
           params: fromParams,
         });
-
-        if (gsapifyRouter.initialTransitionEnabled) {
-          gsapifyRouter.initialTransitionEnabled = false;
-
-          var initialState = [$state.current.name, $state.current.params];
-
-          $state.go('gsapifyRouterBlankState');
-
-          $timeout(function () {
-            $state.go.apply(null, initialState);
-          });
-        }
       });
     }])
 
-    .directive('gsapifyRouter', ['$state',
-      function ($state) {
+    .directive('gsapifyRouter', ['$state', '$timeout',
+      function ($state, $timeout) {
         return {
           priority: 0,
           restrict: 'C',
           link: function ($scope, $element, $attrs) {
             $attrs.$set('data-state', $state.current.name);
+
+            $timeout(function () {
+              $element.addClass('gsapify-router-init');
+            });
           },
         };
       },
@@ -455,5 +485,4 @@
         };
       },
     ]);
-
-})();
+}());

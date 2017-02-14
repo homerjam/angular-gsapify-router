@@ -28,9 +28,10 @@
         <div class="scrollable">
             <div class="scrollable-content">
                 <div class="list-group" toggle="off" bubble target="mainSidebar">
-                    <a class="list-group-item" href="#/">Home <i class="fa fa-chevron-right pull-right"></i></a>
-                    <a class="list-group-item" href="#/page1">Page 1 <i class="fa fa-chevron-right pull-right"></i></a>
-                    <a class="list-group-item" href="#/page2">Page 2 <i class="fa fa-chevron-right pull-right"></i></a>
+                    <a class="list-group-item" ui-sref="home">Home <i class="fa fa-chevron-right pull-right"></i></a>
+                    <a class="list-group-item" ui-sref="page1">Page 1 <i class="fa fa-chevron-right pull-right"></i></a>
+                    <a class="list-group-item" ui-sref="page2">Page 2 <i class="fa fa-chevron-right pull-right"></i></a>
+                    <a class="list-group-item" ui-sref="page3">Page 3 <i class="fa fa-chevron-right pull-right"></i></a>
                 </div>
             </div>
         </div>
@@ -55,9 +56,10 @@
 
         <div class="navbar navbar-app navbar-absolute-bottom">
             <div class="btn-group justified">
-                <a href="#/" class="btn btn-navbar btn-icon-only"><i class="fa fa-home fa-navbar"></i></a>
-                <a href="#/page1" class="btn btn-navbar btn-icon-only"><i class="fa fa-comment fa-navbar"></i></a>
-                <a href="#/page2" class="btn btn-navbar btn-icon-only"><i class="fa fa-bullseye fa-navbar"></i></a>
+                <a ui-sref="home" class="btn btn-navbar btn-icon-only"><i class="fa fa-home fa-navbar"></i></a>
+                <a ui-sref="page1" class="btn btn-navbar btn-icon-only"><i class="fa fa-comment fa-navbar"></i></a>
+                <a ui-sref="page2" class="btn btn-navbar btn-icon-only"><i class="fa fa-bullseye fa-navbar"></i></a>
+                <a ui-sref="page3" class="btn btn-navbar btn-icon-only"><i class="fa fa-ambulance fa-navbar"></i></a>
             </div>
         </div>
 
@@ -68,12 +70,12 @@
         </div>
     </div>
 
-    <script type="text/javascript" src="bower_components/angular/angular.min.js"></script>
-    <script type="text/javascript" src="bower_components/angular-animate/angular-animate.min.js"></script>
-    <script type="text/javascript" src="bower_components/angular-ui/build/angular-ui.min.js"></script>
-    <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.min.js"></script>
-    <script type="text/javascript" src="bower_components/mobile-angular-ui/dist/js/mobile-angular-ui.min.js"></script>
-    <script type="text/javascript" src="bower_components/gsap/src/minified/TweenMax.min.js"></script>
+    <script type="text/javascript" src="bower_components/angular/angular.js"></script>
+    <script type="text/javascript" src="bower_components/angular-animate/angular-animate.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui/build/angular-ui.js"></script>
+    <script type="text/javascript" src="bower_components/angular-ui-router/release/angular-ui-router.js"></script>
+    <script type="text/javascript" src="bower_components/mobile-angular-ui/dist/js/mobile-angular-ui.js"></script>
+    <script type="text/javascript" src="bower_components/gsap/src/uncompressed/TweenMax.js"></script>
     <script type="text/javascript" src="angular-gsapify-router.js"></script>
     <script type="text/javascript" src="example/app.js"></script>
 

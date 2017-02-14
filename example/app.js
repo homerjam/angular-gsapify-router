@@ -58,12 +58,18 @@
     },
   ]);
 
-  angular.module('ExampleApp', ['ngAnimate', 'ui.router', 'mobile-angular-ui', 'hj.gsapifyRouter', 'MainCtrl', 'HomeCtrl', 'Page1Ctrl', 'Page2Ctrl'])
+  angular.module('Page3Ctrl', []).controller('Page3Ctrl', ['$scope', '$log',
+    function ($scope, $log) {
+      $scope.$on('gsapifyRouter:enterSuccess', function (event, element) {
+        $log.log('gsapifyRouter:enterSuccess', element.attr('ui-view'), element.attr('data-state'));
+      });
+    },
+  ]);
+
+  angular.module('ExampleApp', ['ngAnimate', 'ui.router', 'mobile-angular-ui', 'hj.gsapifyRouter', 'MainCtrl', 'HomeCtrl', 'Page1Ctrl', 'Page2Ctrl', 'Page3Ctrl'])
 
     .config(['$stateProvider', '$locationProvider', '$urlRouterProvider', 'gsapifyRouterProvider',
       function ($stateProvider, $locationProvider, $urlRouterProvider, gsapifyRouterProvider) {
-
-        gsapifyRouterProvider.initialTransitionEnabled = true;
 
         gsapifyRouterProvider.defaults = {
           enter: 'slideRight',
@@ -126,6 +132,10 @@
           },
         });
 
+        gsapifyRouterProvider.transition('css', {
+          name: 'css',
+        });
+
         // $locationProvider.html5Mode(true);
 
         $urlRouterProvider.otherwise('/');
@@ -141,7 +151,7 @@
           data: {
             'gsapifyRouter.main': {
               enter: {
-                'in': {
+                in: {
                   transition: 'fadeIn',
                   priority: 1,
                 },
@@ -185,7 +195,7 @@
           data: {
             'gsapifyRouter.main': {
               enter: {
-                'in': {
+                in: {
                   transition: function () {
                     var transitions = Object.keys(gsapifyRouterProvider.transitions);
                     return transitions[transitions.length * Math.random() << 0];
@@ -208,9 +218,29 @@
                   transition: 'fadeOut',
                   priority: 1,
                 },
-                'in': {
+                in: {
                   transition: 'fadeIn',
                   priority: 1,
+                },
+              },
+            },
+          },
+        });
+
+        $stateProvider.state('page3', {
+          url: '/page3',
+          views: {
+            main: {
+              templateUrl: 'example/page3.html',
+              controller: 'Page3Ctrl',
+            },
+          },
+          data: {
+            'gsapifyRouter.main': {
+              enter: {
+                in: {
+                  transition: 'css',
+                  priority: 3,
                 },
               },
             },
@@ -224,6 +254,7 @@
     $templateCache.put('example/home.html', '<div class=\'wrapper\' style=\'background: #81B270\'><h1>Home</h1></div>');
     $templateCache.put('example/page1.html', '<div class=\'wrapper\' style=\'background: #FF7F40\'><h1>Page 1</h1></div>');
     $templateCache.put('example/page2.html', '<div class=\'wrapper\' style=\'background: #7F80B2\'><h1>Page 2</h1></div>');
+    $templateCache.put('example/page3.html', '<div class=\'wrapper\' style=\'background: #44de9F\'><h1>Page 3</h1></div>');
   }]);
 
 })();

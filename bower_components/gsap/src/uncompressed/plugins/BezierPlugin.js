@@ -1,9 +1,9 @@
 /*!
- * VERSION: beta 1.3.4
- * DATE: 2014-11-15
- * UPDATES AND DOCS AT: http://www.greensock.com
+ * VERSION: 1.3.7
+ * DATE: 2017-01-17
+ * UPDATES AND DOCS AT: http://greensock.com
  *
- * @license Copyright (c) 2008-2015, GreenSock. All rights reserved.
+ * @license Copyright (c) 2008-2017, GreenSock. All rights reserved.
  * This work is subject to the terms at http://greensock.com/standard-license or for
  * Club GreenSock members, the software agreement that was issued with your membership.
  * 
@@ -21,6 +21,12 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 			_corProps = {},
 			_globals = _gsScope._gsDefine.globals,
 			Segment = function(a, b, c, d) {
+				if (c === d) { //if c and d match, the final autoRotate value could lock at -90 degrees, so differentiate them slightly.
+					c = d - (d - b) / 1000000;
+				}
+				if (a === b) { //if a and b match, the starting autoRotate value could lock at -90 degrees, so differentiate them slightly.
+					b = a + (c - a) / 1000000;
+				}
 				this.a = a;
 				this.b = b;
 				this.c = c;
@@ -122,7 +128,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 				}
 				l = values.length - 2;
 				if (l < 0) {
-					a[0] = new Segment(values[0][p], 0, 0, values[(l < -1) ? 0 : 1][p]);
+					a[0] = new Segment(values[0][p], 0, 0, values[0][p]);
 					return a;
 				}
 				for (i = 0; i < l; i++) {
@@ -157,7 +163,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 					i = props.length;
 					while (--i > -1) {
 						p = props[i];
-						if (Math.abs(first[p] - last[p]) > 0.05) { //build in a tolerance of +/-0.05 to accommodate rounding errors. For example, if you set an object's position to 4.945, Flash will make it 4.9
+						if (Math.abs(first[p] - last[p]) > 0.05) { //build in a tolerance of +/-0.05 to accommodate rounding errors.
 							seamless = false;
 							break;
 						}
@@ -190,7 +196,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 							a = obj[props[i]];
 							l = a.length - 1;
 							for (j = 0; j < l; j++) {
-								r = a[j+1].da / _r2[j] + a[j].da / _r1[j];
+								r = (a[j+1].da / _r2[j] + a[j].da / _r1[j]) || 0;
 								_r3[j] = (_r3[j] || 0) + r * r;
 							}
 						}
@@ -308,7 +314,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 			BezierPlugin = _gsScope._gsDefine.plugin({
 					propName: "bezier",
 					priority: -1,
-					version: "1.3.4",
+					version: "1.3.7",
 					API: 2,
 					global:true,
 
@@ -319,7 +325,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 							vars = {values:vars};
 						}
 						this._func = {};
-						this._round = {};
+						this._mod = {};
 						this._props = [];
 						this._timeRes = (vars.timeResolution == null) ? 6 : parseInt(vars.timeResolution, 10);
 						var values = vars.values || [],
@@ -371,7 +377,8 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 									this._func[p] = (typeof(target[p]) === "function") ? target[ ((p.indexOf("set") || typeof(target["get" + p.substr(3)]) !== "function") ? p : "get" + p.substr(3)) ] : false;
 								}
 								p = autoRotate[i][2];
-								this._initialRotations[i] = this._func[p] ? this._func[p].call(this._target) : this._target[p];
+								this._initialRotations[i] = (this._func[p] ? this._func[p].call(this._target) : this._target[p]) || 0;
+								this._overwriteProps.push(p);
 							}
 						}
 						this._startRatio = tween.vars.runBackwards ? 1 : 0; //we determine the starting ratio when the tween inits which is always 0 unless the tween has runBackwards:true (indicating it's a from() tween) in which case it's 1.
@@ -433,7 +440,7 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 								this._s2 = curSeg[i];
 								this._si = i;
 							}
-							t = (i + (v - this._s1) / (this._s2 - this._s1)) * this._prec;
+							t = ((i + (v - this._s1) / (this._s2 - this._s1)) * this._prec) || 0;
 						}
 						inv = 1 - t;
 
@@ -442,8 +449,8 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 							p = this._props[i];
 							b = this._beziers[p][curIndex];
 							val = (t * t * b.da + 3 * inv * (t * b.ca + inv * b.ba)) * t + b.a;
-							if (this._round[p]) {
-								val = Math.round(val);
+							if (this._mod[p]) {
+								val = this._mod[p](val, target);
 							}
 							if (func[p]) {
 								target[p](val);
@@ -478,6 +485,10 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 									y2 += ((b2.c + (b2.d - b2.c) * t) - y2) * t;
 
 									val = notStart ? Math.atan2(y2 - y1, x2 - x1) * conv + add : this._initialRotations[i];
+
+									if (this._mod[p]) {
+										val = this._mod[p](val, target); //for modProps
+									}
 
 									if (func[p]) {
 										target[p](val);
@@ -545,18 +556,22 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 						cssp._enableTransforms(false);
 					}
 					data.autoRotate = cssp._target._gsTransform;
+					data.proxy.rotation = data.autoRotate.rotation || 0;
+					cssp._overwriteProps.push("rotation");
 				}
 				plugin._onInitTween(data.proxy, v, cssp._tween);
 				return pt;
 			}});
 		};
 
-		p._roundProps = function(lookup, value) {
+		p._mod = function(lookup) {
 			var op = this._overwriteProps,
-				i = op.length;
+				i = op.length,
+				val;
 			while (--i > -1) {
-				if (lookup[op[i]] || lookup.bezier || lookup.bezierThrough) {
-					this._round[op[i]] = value;
+				val = lookup[op[i]];
+				if (val && typeof(val) === "function") {
+					this._mod[op[i]] = val;
 				}
 			}
 		};
@@ -573,6 +588,15 @@ var _gsScope = (typeof(module) !== "undefined" && module.exports && typeof(globa
 						if (a[i] === p) {
 							a.splice(i, 1);
 						}
+					}
+				}
+			}
+			a = this._autoRotate;
+			if (a) {
+				i = a.length;
+				while (--i > -1) {
+					if (lookup[a[i][2]]) {
+						a.splice(i, 1);
 					}
 				}
 			}

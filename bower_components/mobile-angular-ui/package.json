@@ -1,6 +1,6 @@
 {
   "name": "mobile-angular-ui",
-  "version": "1.2.0-rc.3",
+  "version": "1.2.0",
   "description": "Mobile Angular UI",
   "main": "dist/mobile-angular-ui.js",
   "directories": {
@@ -8,13 +8,13 @@
     "dist": "dist"
   },
   "scripts": {
-    "test": "gulp build && gulp test"
+    "test": "gulp build && gulp test:ci"
   },
   "repository": {
     "type": "git",
     "url": "git://github.com/mcasimir/mobile-angular-ui.git"
   },
-  "author": "",
+  "author": "mcasimir",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/mcasimir/mobile-angular-ui/issues"
