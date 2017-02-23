@@ -132,23 +132,23 @@
           };
 
           var onMutate = function (element, done) {
-            try {
-              var observer = new MutationObserver(function (mutations) {
-                observer.disconnect();
+            // try {
+            //   var observer = new MutationObserver(function (mutations) {
+            //     observer.disconnect();
 
-                $window.requestAnimationFrame(function () {
-                  $timeout(done);
-                });
-              });
+            //     $window.requestAnimationFrame(function () {
+            //       $timeout(done);
+            //     });
+            //   });
 
-              observer.observe(element[0], {
-                attributes: true,
-                childList: false,
-                characterData: false,
-              });
-            } catch (error) {
+            //   observer.observe(element[0], {
+            //     attributes: true,
+            //     childList: false,
+            //     characterData: false,
+            //   });
+            // } catch (error) {
               $timeout(done);
-            }
+            // }
           };
 
           var enter = function (element) {
