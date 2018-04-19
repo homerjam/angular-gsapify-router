@@ -332,19 +332,24 @@
       $stateProvider.state('gsapifyRouterBlankState', {});
     }])
 
-    .run(['$rootScope', '$state', 'gsapifyRouter', '$timeout', function ($rootScope, $state, gsapifyRouter, $timeout) {
+    .run(['$rootScope', '$state', 'gsapifyRouter', '$timeout', '$transitions', function ($rootScope, $state, gsapifyRouter, $timeout, $transitions) {
       $state.history = [];
       $state.previous = {};
 
-      $rootScope.$on('$stateChangeSuccess', function (event, toState, toParams, fromState, fromParams) {
-        $state.previous = fromState;
-        $state.previousParams = fromParams;
+      $transitions.onSuccess({}, function(transition){
+        console.log("transitions ", transition);
+        console.log("--------");
+        console.log(transition.$from(), transition.$to())
 
+        $state.previous = transition.$from();
+        $state.previousParams = transition.$from().params;
         $state.history.push({
-          name: fromState.name,
-          params: fromParams,
+          name: transition.$from().name,
+          params: transition.$from().params
         });
-      });
+        console.log("state history >", $state.history);
+      })
+
     }])
 
     .directive('gsapifyRouter', ['$state', '$timeout',
@@ -363,8 +368,8 @@
       },
     ])
 
-    .service('scrollRecallService', ['$rootScope', '$window', '$document', '$timeout', '$state', 'gsapifyRouter',
-      function ($rootScope, $window, $document, $timeout, $state, gsapifyRouter) {
+    .service('scrollRecallService', ['$rootScope', '$window', '$document', '$timeout', '$state', 'gsapifyRouter', '$transitions',
+      function ($rootScope, $window, $document, $timeout, $state, gsapifyRouter, $transitions) {
         var service = {
           view: null,
         };
@@ -374,6 +379,7 @@
             name: $state.current.name,
             params: $state.params,
           };
+          console.log("CURRENT STATE KEY >>>", getCurrentStateKey);
 
           return JSON.stringify(currentState);
         };
@@ -381,7 +387,7 @@
         var scrollMap = {};
         var currentStateKey = getCurrentStateKey();
 
-        $rootScope.$on('$stateChangeStart', function () {
+        $transitions.onStart({}, function(transition){
           if (!service.view) {
             return;
           }
@@ -392,7 +398,7 @@
           };
         });
 
-        $rootScope.$on('$stateChangeSuccess', function () {
+        $transitions.onSuccess({}, function(transition){
           if (!service.view) {
             return;
           }
@@ -400,7 +406,9 @@
           currentStateKey = getCurrentStateKey();
         });
 
+
         $rootScope.$on('gsapifyRouter:' + gsapifyRouter.scrollRecallEvent, function (event, element) {
+          console.log("on gasprouter event");
           if (!service.view) {
             return;
           }
@@ -470,11 +478,13 @@
             };
           },
           leave: function (element, done) {
+
+            console.log("leave animaton");
             var state = element.attr('data-state');
 
             if (state !== 'gsapifyRouterBlankState') {
               $rootScope.$broadcast('gsapifyRouter:leaveStart', element);
-
+              console.log("leaving ", element);
               gsapifyRouter.leave(element).then(function (obj) {
                 $rootScope.$broadcast('gsapifyRouter:leaveSuccess', element, obj);
 
