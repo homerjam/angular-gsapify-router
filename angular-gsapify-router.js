@@ -337,17 +337,12 @@
       $state.previous = {};
 
       $transitions.onSuccess({}, function(transition){
-        console.log("transitions ", transition);
-        console.log("--------");
-        console.log(transition.$from(), transition.$to())
-
         $state.previous = transition.$from();
         $state.previousParams = transition.$from().params;
         $state.history.push({
           name: transition.$from().name,
           params: transition.$from().params
         });
-        console.log("state history >", $state.history);
       })
 
     }])
@@ -379,7 +374,6 @@
             name: $state.current.name,
             params: $state.params,
           };
-          console.log("CURRENT STATE KEY >>>", getCurrentStateKey);
 
           return JSON.stringify(currentState);
         };
@@ -408,7 +402,6 @@
 
 
         $rootScope.$on('gsapifyRouter:' + gsapifyRouter.scrollRecallEvent, function (event, element) {
-          console.log("on gasprouter event");
           if (!service.view) {
             return;
           }
@@ -478,13 +471,10 @@
             };
           },
           leave: function (element, done) {
-
-            console.log("leave animaton");
             var state = element.attr('data-state');
 
             if (state !== 'gsapifyRouterBlankState') {
               $rootScope.$broadcast('gsapifyRouter:leaveStart', element);
-              console.log("leaving ", element);
               gsapifyRouter.leave(element).then(function (obj) {
                 $rootScope.$broadcast('gsapifyRouter:leaveSuccess', element, obj);
 
