@@ -332,7 +332,7 @@
       $stateProvider.state('gsapifyRouterBlankState', {});
     }])
 
-    .run(['$rootScope', '$state', 'gsapifyRouter', '$timeout', '$transitions', function ($rootScope, $state, gsapifyRouter, $timeout, $transitions) {
+    .run(['$state', '$transitions', function ($state, $transitions) {
       $state.history = [];
       $state.previous = {};
 
@@ -363,8 +363,8 @@
       },
     ])
 
-    .service('scrollRecallService', ['$rootScope', '$window', '$document', '$timeout', '$state', 'gsapifyRouter', '$transitions',
-      function ($rootScope, $window, $document, $timeout, $state, gsapifyRouter, $transitions) {
+    .service('scrollRecallService', ['$rootScope', '$window', '$state', 'gsapifyRouter', '$transitions',
+      function ($rootScope, $window, $state, gsapifyRouter, $transitions) {
         var service = {
           view: null,
         };
