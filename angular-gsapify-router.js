@@ -1,15 +1,18 @@
+/* global angular, TweenMax */
+
 (function () {
   'use strict';
 
   /**
-  * Name: angular-gsapify-router
-  * Description: Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)
-  * Author: jameshomer85@gmail.com
-  * Licence: MIT
-  * Usage: http://github.com/homerjam/angular-gsapify-router
-  */
+   * Name: angular-gsapify-router
+   * Description: Angular UI-Router animation directive allowing configuration of state transitions using [GSAP](http://www.greensock.com/gsap-js/)
+   * Author: jameshomer85@gmail.com
+   * Licence: MIT
+   * Usage: http://github.com/homerjam/angular-gsapify-router
+   */
 
-  angular.module('hj.gsapifyRouter', ['ui.router', 'ngAnimate'])
+  angular
+    .module('hj.gsapifyRouter', ['ui.router', 'ngAnimate'])
 
     .provider('gsapifyRouter', function () {
       var self = this;
@@ -79,16 +82,38 @@
 
       self.scrollRecallEvent = 'leaveSuccess';
 
-      self.$get = ['$rootScope', '$state', '$document', '$injector', '$window', '$timeout', '$q', '$log',
-        function ($rootScope, $state, $document, $injector, $window, $timeout, $q, $log) {
+      self.$get = [
+        '$rootScope',
+        '$state',
+        '$document',
+        '$injector',
+        '$window',
+        '$timeout',
+        '$q',
+        '$log',
+        function (
+          $rootScope,
+          $state,
+          $document,
+          $injector,
+          $window,
+          $timeout,
+          $q,
+          $log
+        ) {
           var getOpts = function (state, view, enterLeave, inOut) {
             var opts = {
               transition: self.defaults[inOut === 'in' ? 'enter' : 'leave'],
               priority: 0,
             };
 
-            if (state.data && state.data['gsapifyRouter.' + view] && state.data['gsapifyRouter.' + view][enterLeave]) {
-              var dataOpts = state.data['gsapifyRouter.' + view][enterLeave][inOut];
+            if (
+              state.data &&
+              state.data['gsapifyRouter.' + view] &&
+              state.data['gsapifyRouter.' + view][enterLeave]
+            ) {
+              var dataOpts =
+                state.data['gsapifyRouter.' + view][enterLeave][inOut];
 
               if (dataOpts) {
                 if (angular.isArray(dataOpts) || angular.isFunction(dataOpts)) {
@@ -98,7 +123,10 @@
                 if (angular.isObject(dataOpts)) {
                   opts = angular.extend(opts, dataOpts);
                   Object.keys(opts).forEach(function (key) {
-                    if (angular.isArray(opts[key]) || angular.isFunction(opts[key])) {
+                    if (
+                      angular.isArray(opts[key]) ||
+                      angular.isFunction(opts[key])
+                    ) {
                       opts[key] = $injector.invoke(opts[key]);
                     }
                   });
@@ -147,7 +175,7 @@
             //     characterData: false,
             //   });
             // } catch (error) {
-              $timeout(done);
+            $timeout(done);
             // }
           };
 
@@ -175,12 +203,13 @@
               from = currentOpts;
             }
 
-            var trigger = from.trigger || getOpts(previous, view, 'leave', 'out').trigger;
+            var trigger =
+              from.trigger || getOpts(previous, view, 'leave', 'out').trigger;
 
             var transition = getTransition(from.transition);
 
             if (!transition) {
-              return $log.error("gsapifyRouter: Invalid transition '" + transition + "'");
+              return $log.error('gsapifyRouter: Invalid transition \'' + transition + '\'');
             }
 
             var name = transition.name;
@@ -189,6 +218,7 @@
 
             if (name) {
               element.attr('data-transition', name);
+              delete vars.css;
             }
 
             vars.onStart = function () {
@@ -200,6 +230,7 @@
 
             vars.onComplete = function () {
               element.addClass('gsapify-router-in-end');
+              element.removeAttr('data-transition');
 
               deferred.resolve({
                 element: element,
@@ -207,8 +238,12 @@
               });
             };
 
-            function go () {
-              if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
+            function go() {
+              if (
+                !vars.css ||
+                Object.keys(vars.css).length === 0 ||
+                duration === 0
+              ) {
                 onMutate(element, function () {
                   vars.onStart();
 
@@ -258,12 +293,13 @@
               to = previousOpts;
             }
 
-            var trigger = to.trigger || getOpts(current, view, 'enter', 'in').trigger;
+            var trigger =
+              to.trigger || getOpts(current, view, 'enter', 'in').trigger;
 
             var transition = getTransition(to.transition);
 
             if (!transition) {
-              return $log.error("gsapifyRouter: Invalid transition '" + transition + "'");
+              return $log.error('gsapifyRouter: Invalid transition \'' + transition + '\'');
             }
 
             var name = transition.name;
@@ -272,6 +308,7 @@
 
             if (name) {
               element.attr('data-transition', name);
+              delete vars.css;
             }
 
             vars.onStart = function () {
@@ -288,8 +325,12 @@
               });
             };
 
-            function go () {
-              if (!vars.css || Object.keys(vars.css).length === 0 || duration === 0) {
+            function go() {
+              if (
+                !vars.css ||
+                Object.keys(vars.css).length === 0 ||
+                duration === 0
+              ) {
                 onMutate(element, function () {
                   vars.onStart();
 
@@ -328,26 +369,34 @@
       ];
     })
 
-    .config(['$stateProvider', function ($stateProvider) {
-      $stateProvider.state('gsapifyRouterBlankState', {});
-    }])
+    .config([
+      '$stateProvider',
+      function ($stateProvider) {
+        $stateProvider.state('gsapifyRouterBlankState', {});
+      },
+    ])
 
-    .run(['$state', '$transitions', function ($state, $transitions) {
-      $state.history = [];
-      $state.previous = {};
+    .run([
+      '$state',
+      '$transitions',
+      function ($state, $transitions) {
+        $state.history = [];
+        $state.previous = {};
 
-      $transitions.onSuccess({}, function(transition){
-        $state.previous = transition.$from();
-        $state.previousParams = transition.$from().params;
-        $state.history.push({
-          name: transition.$from().name,
-          params: transition.$from().params
+        $transitions.onSuccess({}, function (transition) {
+          $state.previous = transition.$from();
+          $state.previousParams = transition.$from().params;
+          $state.history.push({
+            name: transition.$from().name,
+            params: transition.$from().params,
+          });
         });
-      })
+      },
+    ])
 
-    }])
-
-    .directive('gsapifyRouter', ['$state', '$timeout',
+    .directive('gsapifyRouter', [
+      '$state',
+      '$timeout',
       function ($state, $timeout) {
         return {
           priority: 0,
@@ -363,7 +412,12 @@
       },
     ])
 
-    .service('scrollRecallService', ['$rootScope', '$window', '$state', 'gsapifyRouter', '$transitions',
+    .service('scrollRecallService', [
+      '$rootScope',
+      '$window',
+      '$state',
+      'gsapifyRouter',
+      '$transitions',
       function ($rootScope, $window, $state, gsapifyRouter, $transitions) {
         var service = {
           view: null,
@@ -381,7 +435,7 @@
         var scrollMap = {};
         var currentStateKey = getCurrentStateKey();
 
-        $transitions.onStart({}, function(transition){
+        $transitions.onStart({}, function (transition) {
           if (!service.view) {
             return;
           }
@@ -392,7 +446,7 @@
           };
         });
 
-        $transitions.onSuccess({}, function(transition){
+        $transitions.onSuccess({}, function (transition) {
           if (!service.view) {
             return;
           }
@@ -400,34 +454,44 @@
           currentStateKey = getCurrentStateKey();
         });
 
-
-        $rootScope.$on('gsapifyRouter:' + gsapifyRouter.scrollRecallEvent, function (event, element) {
-          if (!service.view) {
-            return;
-          }
-
-          var view = element.attr('ui-view') || element.attr('data-ui-view');
-
-          if (view === service.view) {
-            var prevState = $state.history[$state.history.length - 2];
-
-            if (prevState) {
-              var prevStateKey = JSON.stringify(prevState);
-
-              if (scrollMap[prevStateKey] && currentStateKey === prevStateKey) {
-                $window.scrollTo(scrollMap[prevStateKey].x, scrollMap[prevStateKey].y);
-                return;
-              }
+        $rootScope.$on(
+          'gsapifyRouter:' + gsapifyRouter.scrollRecallEvent,
+          function (event, element) {
+            if (!service.view) {
+              return;
             }
 
-            $window.scrollTo(0, 0);
+            var view = element.attr('ui-view') || element.attr('data-ui-view');
+
+            if (view === service.view) {
+              var prevState = $state.history[$state.history.length - 2];
+
+              if (prevState) {
+                var prevStateKey = JSON.stringify(prevState);
+
+                if (
+                  scrollMap[prevStateKey] &&
+                  currentStateKey === prevStateKey
+                ) {
+                  $window.scrollTo(
+                    scrollMap[prevStateKey].x,
+                    scrollMap[prevStateKey].y
+                  );
+                  return;
+                }
+              }
+
+              $window.scrollTo(0, 0);
+            }
           }
-        });
+        );
 
         return service;
-      }])
+      },
+    ])
 
-    .directive('scrollRecall', ['scrollRecallService',
+    .directive('scrollRecall', [
+      'scrollRecallService',
       function (scrollRecallService) {
         return {
           priority: 0,
@@ -439,7 +503,9 @@
       },
     ])
 
-    .animation('.gsapify-router', ['$rootScope', 'gsapifyRouter',
+    .animation('.gsapify-router', [
+      '$rootScope',
+      'gsapifyRouter',
       function ($rootScope, gsapifyRouter) {
         return {
           enter: function (element, done) {
@@ -449,7 +515,11 @@
               $rootScope.$broadcast('gsapifyRouter:enterStart', element);
 
               gsapifyRouter.enter(element).then(function (obj) {
-                $rootScope.$broadcast('gsapifyRouter:enterSuccess', element, obj);
+                $rootScope.$broadcast(
+                  'gsapifyRouter:enterSuccess',
+                  element,
+                  obj
+                );
 
                 done();
               });
@@ -476,7 +546,11 @@
             if (state !== 'gsapifyRouterBlankState') {
               $rootScope.$broadcast('gsapifyRouter:leaveStart', element);
               gsapifyRouter.leave(element).then(function (obj) {
-                $rootScope.$broadcast('gsapifyRouter:leaveSuccess', element, obj);
+                $rootScope.$broadcast(
+                  'gsapifyRouter:leaveSuccess',
+                  element,
+                  obj
+                );
 
                 done();
               });

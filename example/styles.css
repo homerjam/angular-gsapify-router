@@ -8,6 +8,43 @@ body {
 	-moz-user-select: none;
 	-ms-user-select: none;
 	user-select: none;
+	font-family: sans-serif;
+	color: white;
+	background: black;
+	-webkit-font-smoothing: antialiased;
+}
+
+menu {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 1;
+	/* mix-blend-mode: difference; */
+}
+
+ul {
+	list-style: none;
+}
+
+li {
+	position: relative;
+	margin-bottom: 0.5em;
+}
+
+li.active:before {
+	content: "• ";
+	display: inline-block;
+	position: absolute;
+	top: 0;
+	right: 100%;
+	font-size: 200%;
+	line-height: 50%;
+	margin-right: 0.25em;
+}
+
+a {
+	color: currentColor !important;
+	text-decoration: none;
 }
 
 [ui-view="main"] {
@@ -17,6 +54,7 @@ body {
 	width: 100%;
 	height: 100%;
 	z-index: 0;
+	will-change: transform;
 }
 
 [ui-view="main"] .wrapper {
