@@ -10,7 +10,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "Homerjam <jameshomer85@gmail.com>",
+  "author": "James Homer <hello@homerjam.es>",
   "license": "MIT",
   "dependencies": {
     "@uirouter/angularjs": "^1.0.15",
