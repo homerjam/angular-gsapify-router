@@ -12,7 +12,7 @@ Angular UI-Router animation directive allowing configuration of state transition
 
 ## Usage
 
-First include [TweenMax](http://greensock.com/tweenmax) (part of GSAP) on your page or in your build
+First include [TweenLite](http://greensock.com/tweenlite) (part of GSAP) on your page or in your build
 
 In your main app file eg. `app.js`:
 
@@ -157,13 +157,16 @@ angular.module('myApp', ['ui-router', 'hj.gsapifyRouter'])
 ```
 
 In your templates:
+
 ```html
 <!-- add 'gsapify-router' class to ui-view element -->
 <div ui-view="main" class="gsapify-router"></div>
 ```
 
 #### scrollRecall directive
+
 Optionally add `scrollRecall` directive to remember and return to scroll position of previous state:
+
 ```html
 <!-- add scrollRecall directive -->
 <div ui-view="main" class="gsapify-router" scroll-recall></div>
@@ -177,6 +180,6 @@ This happens because during the transition the incoming and outgoing views both 
 
 ```css
 .gsapify-router-in-setup {
-    display: none;
+  display: none;
 }
 ```

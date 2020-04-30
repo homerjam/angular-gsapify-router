@@ -1,4 +1,4 @@
-/* global angular, TweenMax */
+/* global angular, TweenLite */
 
 (function () {
   'use strict';
@@ -209,7 +209,9 @@
             var transition = getTransition(from.transition);
 
             if (!transition) {
-              return $log.error('gsapifyRouter: Invalid transition \'' + transition + '\'');
+              return $log.error(
+                "gsapifyRouter: Invalid transition '" + transition + "'"
+              );
             }
 
             var name = transition.name;
@@ -255,7 +257,7 @@
                 return;
               }
 
-              TweenMax.from(element, duration, vars);
+              TweenLite.from(element, duration, vars);
             }
 
             if (trigger) {
@@ -299,7 +301,9 @@
             var transition = getTransition(to.transition);
 
             if (!transition) {
-              return $log.error('gsapifyRouter: Invalid transition \'' + transition + '\'');
+              return $log.error(
+                "gsapifyRouter: Invalid transition '" + transition + "'"
+              );
             }
 
             var name = transition.name;
@@ -342,7 +346,7 @@
                 return;
               }
 
-              TweenMax.to(element, duration, vars);
+              TweenLite.to(element, duration, vars);
             }
 
             if (trigger) {
@@ -435,7 +439,7 @@
         var scrollMap = {};
         var currentStateKey = getCurrentStateKey();
 
-        $transitions.onStart({}, function (transition) {
+        $transitions.onStart({}, function () {
           if (!service.view) {
             return;
           }
@@ -446,7 +450,7 @@
           };
         });
 
-        $transitions.onSuccess({}, function (transition) {
+        $transitions.onSuccess({}, function () {
           if (!service.view) {
             return;
           }
@@ -559,4 +563,4 @@
         };
       },
     ]);
-}());
+})();

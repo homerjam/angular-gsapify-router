@@ -248,7 +248,9 @@ angular
             enter: {
               in: {
                 transition: function () {
-                  var transitions = Object.keys(gsapifyRouterProvider.transitions);
+                  var transitions = Object.keys(
+                    gsapifyRouterProvider.transitions
+                  );
                   // eslint-disable-next-line
                   return transitions[(transitions.length * Math.random()) << 0];
                 },
@@ -306,19 +308,19 @@ angular.module('ExampleApp').run([
   function ($templateCache) {
     $templateCache.put(
       'example/home.html',
-      '<div class=\'wrapper\' style=\'background: #81B270\'><h1>Home</h1></div>'
+      "<div class='wrapper' style='background: #81B270'><h1>Home</h1></div>"
     );
     $templateCache.put(
       'example/page1.html',
-      '<div class=\'wrapper\' style=\'background: #FF7F40\'><h1>Page 1</h1></div>'
+      "<div class='wrapper' style='background: #FF7F40'><h1>Page 1</h1></div>"
     );
     $templateCache.put(
       'example/page2.html',
-      '<div class=\'wrapper\' style=\'background: #7F80B2\'><h1>Page 2</h1></div>'
+      "<div class='wrapper' style='background: #7F80B2'><h1>Page 2</h1></div>"
     );
     $templateCache.put(
       'example/page3.html',
-      '<div class=\'wrapper\' style=\'background: #44de9F\'><h1>Page 3</h1></div>'
+      "<div class='wrapper' style='background: #44de9F'><h1>Page 3</h1></div>"
     );
   },
 ]);
