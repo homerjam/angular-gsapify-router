@@ -1,4 +1,4 @@
-/* global angular, TweenLite */
+/* global angular, TweenMax */
 
 (function () {
   'use strict';
@@ -257,7 +257,7 @@
                 return;
               }
 
-              TweenLite.from(element, duration, vars);
+              TweenMax.from(element, duration, vars);
             }
 
             if (trigger) {
@@ -346,7 +346,7 @@
                 return;
               }
 
-              TweenLite.to(element, duration, vars);
+              TweenMax.to(element, duration, vars);
             }
 
             if (trigger) {
