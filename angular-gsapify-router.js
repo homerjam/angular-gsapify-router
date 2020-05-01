@@ -118,9 +118,7 @@
               if (dataOpts) {
                 if (angular.isArray(dataOpts) || angular.isFunction(dataOpts)) {
                   opts = $injector.invoke(dataOpts);
-                }
-
-                if (angular.isObject(dataOpts)) {
+                } else if (angular.isObject(dataOpts)) {
                   opts = angular.extend(opts, dataOpts);
                   Object.keys(opts).forEach(function (key) {
                     if (
@@ -130,9 +128,7 @@
                       opts[key] = $injector.invoke(opts[key]);
                     }
                   });
-                }
-
-                if (angular.isString(dataOpts)) {
+                } else if (angular.isString(dataOpts)) {
                   opts.transition = dataOpts;
                 }
               }
